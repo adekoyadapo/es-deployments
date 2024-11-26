@@ -1,0 +1,36 @@
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: nginx-gw
+  namespace: default
+spec:
+  selector:
+    istio: ingressgateway # Matches the Istio ingress gateway deployment
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - "*"
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: VirtualService
+metadata:
+  name: nginx-vs
+  namespace: default
+spec:
+  hosts:
+  - "*" # Replace with your domain if you have one (e.g., "example.com")
+  gateways:
+  - nginx-gw
+  http:
+  - match:
+    - uri:
+        prefix: "/"
+    route:
+    - destination:
+        host: nginx.default.svc.cluster.local
+        port:
+          number: 80

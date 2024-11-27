@@ -57,11 +57,19 @@ variable "helm_release" {
 }
 
 variable "demo_domain" {
-  type    = string
-  default = "eck.demo"
+  type        = string
+  default     = "eck.demo"
+  description = "demo domain name"
 }
 
 variable "dir" {
-  type    = string
-  default = "manifests"
+  type        = string
+  default     = "manifests"
+  description = "dir holding esk manifests"
+}
+
+variable "ecs_version" {
+  type        = string
+  default     = "8.16.1"
+  description = "Elastic Search Version"
 }

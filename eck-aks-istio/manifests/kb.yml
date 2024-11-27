@@ -4,7 +4,7 @@ metadata:
   name: kb
   namespace: eck 
 spec:
-  version: 8.16.1
+  version: ${ecs_version}
   count: 1
   elasticsearchRef:
     name: es

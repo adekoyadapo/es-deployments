@@ -2,35 +2,51 @@ locals {
   manifests = {
     for fn in fileset("${path.module}/${var.dir}", "*.yml") :
     fn => templatefile("${path.module}/${var.dir}/${fn}", {
-      domain = var.demo_domain
+      domain      = var.demo_domain
+      ecs_version = var.ecs_version
+      sc_name     = azurerm_storage_account.sc.name
     })
   }
   authentication = "${keys(data.kubernetes_resource.eck_password.object.data)[0]}:${base64decode(data.kubernetes_resource.eck_password.object.data.elastic)}"
 }
 
 # Generate random resource group name
-resource "random_pet" "rg_name" {
-  prefix = var.resource_group_name_prefix
+resource "random_string" "suffix" {
+  length  = 4
+  upper   = false
+  special = false
 }
 
 resource "azurerm_resource_group" "rg" {
   location = var.resource_group_location
-  name     = random_pet.rg_name.id
+  name     = "${var.resource_group_name_prefix}-${random_string.suffix.result}"
 }
 
-resource "random_pet" "azurerm_kubernetes_cluster_name" {
-  prefix = "cluster"
+resource "azurerm_storage_account" "sc" {
+  name                      = "snapshot${random_string.suffix.result}" # Must be unique across Azure
+  resource_group_name       = azurerm_resource_group.rg.name
+  location                  = azurerm_resource_group.rg.location
+  account_tier              = "Standard"
+  account_replication_type  = "LRS"
+  enable_https_traffic_only = true
+
+  tags = {
+    environment = "example"
+  }
 }
 
-resource "random_pet" "azurerm_kubernetes_cluster_dns_prefix" {
-  prefix = "dns"
+resource "azurerm_storage_container" "sc" {
+  name                  = "eck-snapshot-${random_string.suffix.result}"
+  storage_account_name  = azurerm_storage_account.sc.name
+  container_access_type = "private"
 }
+
 
 resource "azurerm_kubernetes_cluster" "k8s" {
   location            = azurerm_resource_group.rg.location
-  name                = random_pet.azurerm_kubernetes_cluster_name.id
+  name                = "${azurerm_resource_group.rg.name}-aks"
   resource_group_name = azurerm_resource_group.rg.name
-  dns_prefix          = random_pet.azurerm_kubernetes_cluster_dns_prefix.id
+  dns_prefix          = "${azurerm_resource_group.rg.name}-dns"
 
   identity {
     type = "SystemAssigned"
@@ -69,12 +85,26 @@ YAML
   depends_on = [helm_release.sec]
 }
 
+resource "kubernetes_secret" "snapshot" {
+  metadata {
+    name      = "azure-snapshot-secrets"
+    namespace = kubectl_manifest.namespace.name
+  }
+
+  data = {
+    "azure.client.default.account" = azurerm_storage_account.sc.name
+    "azure.client.default.key"     = azurerm_storage_account.sc.primary_access_key
+  }
+
+  type = "Opaque"
+}
+
 resource "kubectl_manifest" "eck" {
   for_each = { for k, v in local.manifests : k => v }
 
   yaml_body = each.value
 
-  depends_on = [helm_release.sec, kubectl_manifest.namespace]
+  depends_on = [helm_release.sec, kubectl_manifest.namespace, kubernetes_secret.snapshot]
 }
 
 resource "time_sleep" "wait" {
@@ -125,6 +155,11 @@ data "http" "elasticsearch_request" {
   request_headers = {
     Host          = "es.${var.demo_domain}"
     authorization = "Basic ${base64encode(local.authentication)}"
+  }
+  retry {
+    attempts     = 5
+    max_delay_ms = 5000
+    min_delay_ms = 3000
   }
   insecure   = true
   depends_on = [time_sleep.wait]

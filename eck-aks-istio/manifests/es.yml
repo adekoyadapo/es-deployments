@@ -5,12 +5,21 @@ metadata:
   name: es
   namespace: eck
 spec:
-  version: 8.16.1
+  version: ${ecs_version}
+  secureSettings:
+  - secretName: azure-snapshot-secrets
   nodeSets:
   - name: default
     count: 3
     config:
       node.store.allow_mmap: false
+      azure.client.default.endpoint_suffix: "ignored;BlobEndpoint=https://${sc_name}.blob.core.windows.net"
+    podTemplate:
+      metadata:
+        annotations:
+          traffic.sidecar.istio.io/includeInboundPorts: "*"
+          traffic.sidecar.istio.io/excludeOutboundPorts: "9300"
+          traffic.sidecar.istio.io/excludeInboundPorts: "9300"
   http:
     tls:
       selfSignedCertificate:

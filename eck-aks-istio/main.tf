@@ -1,10 +1,13 @@
 locals {
+  dir = length(regexall("^8\\.", var.ecs_version)) > 0 ? "manifests" : "manifests_7"
   manifests = {
-    for fn in fileset("${path.module}/${var.dir}", "*.yml") :
-    fn => templatefile("${path.module}/${var.dir}/${fn}", {
+    for fn in fileset("${path.module}/${local.dir}", "*.yml") :
+    fn => templatefile("${path.module}/${local.dir}/${fn}", {
       domain      = var.demo_domain
       ecs_version = var.ecs_version
       sc_name     = azurerm_storage_account.sc.name
+      sc_key      = azurerm_storage_account.sc.primary_access_key
+
     })
   }
   authentication = "${keys(data.kubernetes_resource.eck_password.object.data)[0]}:${base64decode(data.kubernetes_resource.eck_password.object.data.elastic)}"
@@ -110,7 +113,7 @@ resource "kubectl_manifest" "eck" {
 resource "time_sleep" "wait" {
   depends_on = [kubectl_manifest.eck]
 
-  create_duration = "120s"
+  create_duration = "180s"
 }
 
 data "kubernetes_resource" "gateway" {

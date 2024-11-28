@@ -76,3 +76,5 @@ terraform.rc
 ehthumbs.db
 Thumbs.db
 sa.json
+
+kube_config

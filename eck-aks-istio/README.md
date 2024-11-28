@@ -5,6 +5,7 @@
 ## Additional
 
 - Integration of snapshot with azure storage
+- Manifest for deployments in both 7.x and 8.x cluster versions
 
 Example setup
 

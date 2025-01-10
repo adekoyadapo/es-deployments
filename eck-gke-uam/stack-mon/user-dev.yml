@@ -1,0 +1,10 @@
+---
+kind: Secret
+apiVersion: v1
+metadata:
+  name: elastic-credentials
+  namespace: development
+stringData:
+  username: ${username}
+  password: ${password}
+  roles: superuser

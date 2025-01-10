@@ -1,0 +1,172 @@
+---
+# ES and Kibana resources
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: es-prod
+  namespace: production
+spec:
+  version: 8.15.3
+  nodeSets:
+  - name: default
+    count: 2
+    config:
+      node.store.allow_mmap: false
+      xpack.security.audit.enabled: true
+      xpack.security.audit.logfile.events.include: "authentication_success"
+      xpack.security.audit.logfile.events.emit_request_body: true
+      xpack.security.audit.logfile.events.ignore_filters.system.users: ["*_system", "found-internal-*",  "_xpack_security", "_xpack", "elastic/fleet-server","_async_search", "found-internal-admin-proxy"]
+      xpack.security.audit.logfile.events.ignore_filters.realm.realms : [ "_es_api_key" ]
+      xpack.security.audit.logfile.events.ignore_filters.internal_system.indices : ["*ml-inference-native-*", "*monitoring-es-*"]
+      xpack.http.ssl.verification_mode: "none"
+    podTemplate:
+      metadata:
+        labels:
+          scrape: es
+        annotations:
+          co.elastic.logs/enabled: "true"
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data # Do not change this name unless you set up a volume mount for the data path.
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 50Gi
+        storageClassName: standard
+  monitoring:
+    metrics:
+      elasticsearchRefs:
+      - name: es-mon
+        namespace: observability
+    logs:
+      elasticsearchRefs:
+      - name: es-mon
+        namespace: observability
+  auth:
+    fileRealm:
+    - secretName: elastic-credentials
+---
+apiVersion: kibana.k8s.elastic.co/v1
+kind: Kibana
+metadata:
+  name: kb-prod
+  namespace: production
+spec:
+  version: 8.15.3
+  count: 1
+  elasticsearchRef:
+    name: es-prod
+  monitoring:
+    metrics:
+      elasticsearchRefs:
+      - name: es-mon
+        namespace: observability
+    logs:
+      elasticsearchRefs:
+      - name: es-mon
+        namespace: observability
+  config:
+    # https://www.elastic.co/guide/en/kibana/current/monitoring-metricbeat.html
+    monitoring.kibana.collection.enabled: false
+    xpack.security.audit.enabled: true
+    xpack.security.audit.ignore_filters:
+    - categories: [web]
+    - actions: [saved_object_open_point_in_time, saved_object_close_point_in_time, saved_object_find, space_find]
+  podTemplate:
+    metadata:
+      labels:
+        scrape: kb
+      annotations:
+        co.elastic.logs/enabled: "true"
+    spec:
+      containers:
+      - name: kibana
+        env:
+          - name: NODE_OPTIONS
+            value: "--max-old-space-size=1024"
+        resources:
+          requests:
+            memory: 1Gi
+            cpu: 0.5
+          limits:
+            memory: 1.5Gi
+            cpu: 1
+---
+# Monitoring ckuster
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: es-mon
+  namespace: observability
+spec:
+  version: 8.15.4
+  nodeSets:
+  - name: default
+    count: 2
+    podTemplate:
+      spec:
+        containers:
+        - name: elasticsearch
+          resources:
+            requests:
+              memory: 2Gi
+              cpu: 2
+            limits:
+              memory: 2.5Gi
+    config:
+      node.store.allow_mmap: false
+      xpack.http.ssl.verification_mode: "none"
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data # Do not change this name unless you set up a volume mount for the data path.
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 50Gi
+        storageClassName: standard
+  auth:
+    fileRealm:
+    - secretName: elastic-credentials
+  remoteClusters:
+  - name: es-dev
+    elasticsearchRef:
+      name: es-dev
+      namespace: development
+  - name: es-prod
+    elasticsearchRef:
+      name: es-prod
+      namespace: production
+---
+apiVersion: kibana.k8s.elastic.co/v1
+kind: Kibana
+metadata:
+  name: kb-mon
+  namespace: observability
+spec:
+  version: 8.15.4
+  count: 1
+  elasticsearchRef:
+    name: es-mon
+  config:
+    # enable the UI to reflect container level CPU usage, only displays info if CPU limits are set on the monitored ES cluster
+    # https://www.elastic.co/guide/en/kibana/current/monitoring-settings-kb.html
+    monitoring.ui.container.elasticsearch.enabled: true
+  podTemplate:
+    spec:
+      containers:
+      - name: kibana
+        env:
+          - name: NODE_OPTIONS
+            value: "--max-old-space-size=1024"
+        resources:
+          requests:
+            memory: 1Gi
+            cpu: 0.5
+          limits:
+            memory: 2.5Gi
+            cpu: 1
+...

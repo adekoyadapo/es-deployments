@@ -1,0 +1,6 @@
+controller:
+  service:
+    # loadBalancerIP: 127.0.0.1
+    externalTrafficPolicy: Local
+  config:
+    use-forwarded-headers: "true"

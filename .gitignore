@@ -78,3 +78,4 @@ Thumbs.db
 sa.json
 
 kube_config
+kubeconfig*

@@ -1,0 +1,35 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: es-ingress-prod
+  namespace: production
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: kb-prod.${domain}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: kb-prod-kb-http
+            port:
+              number: 5601
+  - host: es-prod.${domain}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: es-prod-es-http
+            port:
+              number: 9200
+  tls:
+  - hosts:
+    - "*.sslip.io"
+    secretName: wildcard-tls-secret

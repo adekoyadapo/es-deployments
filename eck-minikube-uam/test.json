@@ -1,0 +1,222 @@
+[
+    {
+        "_index": "index",
+        "_id": "1",
+        "_source": {"@timestamp":"2025-01-11T04:47:48.511Z", "log.level": "INFO",  "elasticsearch.slowlog.id":"4c4e18ea-7d56-45a7-a8c3-b7ab0a7153ca;kibana:application:discover:new","elasticsearch.slowlog.message":"[kibana_sample_data_ecommerce][0]","elasticsearch.slowlog.search_type":"QUERY_THEN_FETCH","elasticsearch.slowlog.source":"{\\\"size\\\":500,\\\"query\\\":{\\\"bool\\\":{\\\"filter\\\":[{\\\"bool\\\":{\\\"should\\\":[{\\\"term\\\":{\\\"customer_gender\\\":{\\\"value\\\":\\\"MALE\\\"}}}],\\\"minimum_should_match\\\":\\\"1\\\",\\\"boost\\\":1.0}},{\\\"range\\\":{\\\"order_date\\\":{\\\"gte\\\":\\\"2025-01-03T07:00:00.000Z\\\",\\\"lte\\\":\\\"2025-01-11T04:47:47.930Z\\\",\\\"format\\\":\\\"strict_date_optional_time\\\",\\\"boost\\\":1.0}}}],\\\"boost\\\":1.0}},\\\"version\\\":true,\\\"_source\\\":false,\\\"stored_fields\\\":\\\"*\\\",\\\"fields\\\":[{\\\"field\\\":\\\"*\\\",\\\"include_unmapped\\\":true},{\\\"field\\\":\\\"customer_birth_date\\\",\\\"format\\\":\\\"strict_date_optional_time\\\"},{\\\"field\\\":\\\"order_date\\\",\\\"format\\\":\\\"strict_date_optional_time\\\"},{\\\"field\\\":\\\"products.created_on\\\",\\\"format\\\":\\\"strict_date_optional_time\\\"}],\\\"script_fields\\\":{},\\\"sort\\\":[{\\\"order_date\\\":{\\\"order\\\":\\\"desc\\\",\\\"unmapped_type\\\":\\\"boolean\\\",\\\"format\\\":\\\"strict_date_optional_time\\\"}},{\\\"_doc\\\":{\\\"order\\\":\\\"desc\\\",\\\"unmapped_type\\\":\\\"boolean\\\"}}],\\\"track_total_hits\\\":-1,\\\"highlight\\\":{\\\"pre_tags\\\":[\\\"@kibana-highlighted-field@\\\"],\\\"post_tags\\\":[\\\"@/kibana-highlighted-field@\\\"],\\\"fragment_size\\\":2147483647,\\\"fields\\\":{\\\"*\\\":{}}}}","elasticsearch.slowlog.stats":"[]","elasticsearch.slowlog.took":"277.7ms","elasticsearch.slowlog.took_millis":277,"elasticsearch.slowlog.total_hits":"0+ hits","elasticsearch.slowlog.total_shards":1 , "ecs.version": "1.2.0","service.name":"ES_ECS","event.dataset":"elasticsearch.index_search_slowlog","process.thread.name":"elasticsearch[es-dev-es-default-0][search][T#17]","log.logger":"index.search.slowlog.fetch","trace.id":"21c40399f1fe7428f99750902c67c94c","elasticsearch.cluster.uuid":"1IWGn5syTSi0ywr85MimCA","elasticsearch.node.id":"4vla-SapQzOAp3lJ95I2Aw","elasticsearch.node.name":"es-dev-es-default-0","elasticsearch.cluster.name":"es-dev"}
+    }
+]
+
+
+
+"_source": {
+    "agent": {
+      "name": "es-prod-es-default-1",
+      "id": "5c9138c4-1ba6-4cd5-88ea-d5a2a711643c",
+      "ephemeral_id": "0029249b-d905-472c-abc5-00076f12c663",
+      "type": "filebeat",
+      "version": "8.15.3"
+    },
+    "log": {
+      "file": {
+        "path": "/usr/share/elasticsearch/logs/es-prod_index_search_slowlog.json"
+      },
+      "offset": 199638,
+      "level": "INFO",
+      "logger": "index.search.slowlog.fetch"
+    },
+    "cloud": {
+      "availability_zone": "northamerica-northeast1-b",
+      "instance": {
+        "name": "gke-eck-gke-uam-nap-e2-standard-4-peh-b4cc3f33-89ww",
+        "id": "8950882482737311188"
+      },
+      "provider": "gcp",
+      "machine": {
+        "type": "e2-standard-4"
+      },
+      "service": {
+        "name": "GCE"
+      },
+      "project": {
+        "id": "elastic-customer-eng"
+      },
+      "region": "northamerica-northeast1",
+      "account": {
+        "id": "elastic-customer-eng"
+      }
+    },
+    "trace": {
+      "id": "974c3f73c4ca33e436b896cea63849e3"
+    },
+    "ecs": {
+      "version": "1.2.0"
+    },
+    "elasticsearch": {
+      "uam": {
+        "search": {
+          "date_range": {
+            "duration": -7,
+            "from": "2025-01-09T18:57:24.199Z",
+            "to": "2025-01-02T18:57:24.199Z"
+          },
+          "hits": 0,
+          "query": "{bool={filter=[{bool={must=[{exists={field=OriginLocation, boost=1.0}}, {geo_bounding_box={OriginLocation={top_left=[-135.0, 55.77657], bottom_right=[-87.1875, 40.9799]}, boost=1.0, validation_method=STRICT, ignore_unmapped=false}}], boost=1.0}}, {range={timestamp={format=strict_date_optional_time, gte=2025-01-02T18:57:24.199Z, boost=1.0, lte=2025-01-09T18:57:24.199Z}}}], boost=1.0}}",
+          "id": "7380b190-1026-45c6-bc1e-814b375106b6"
+        },
+        "saved_object": {
+          "id": "7adfa750-4c81-11e8-b3d7-01146121b73d;maps:maps:23"
+        },
+        "application": "dashboards",
+        "origination": "kibana",
+        "opaque_id": "7380b190-1026-45c6-bc1e-814b375106b6;kibana:application:dashboards:7adfa750-4c81-11e8-b3d7-01146121b73d;maps:maps:23"
+      },
+      "node": {
+        "name": "es-prod-es-default-1",
+        "id": "1q201BwbSFO-JKOC10wHwA"
+      },
+      "cluster": {
+        "name": "es-prod",
+        "uuid": "4b7QsSxfQkSWgQ-cKwocoA"
+      },
+      "extracted_query_terms": [],
+      "slowlog": {
+        "total_shards": 1,
+        "aggregations.gridSplit.geotile_grid.precision": 7,
+        "query.bool.filter.range.timestamp.lte": "2025-01-09T18:57:24.199Z",
+        "source": "{\"size\":0,\"query\":{\"bool\":{\"filter\":[{\"bool\":{\"must\":[{\"exists\":{\"field\":\"OriginLocation\",\"boost\":1.0}},{\"geo_bounding_box\":{\"OriginLocation\":{\"top_left\":[-135.0,55.77657],\"bottom_right\":[-87.1875,40.9799]},\"validation_method\":\"STRICT\",\"ignore_unmapped\":false,\"boost\":1.0}}],\"boost\":1.0}},{\"range\":{\"timestamp\":{\"gte\":\"2025-01-02T18:57:24.199Z\",\"lte\":\"2025-01-09T18:57:24.199Z\",\"format\":\"strict_date_optional_time\",\"boost\":1.0}}}],\"boost\":1.0}},\"_source\":{\"includes\":[],\"excludes\":[]},\"stored_fields\":\"*\",\"fields\":[{\"field\":\"timestamp\",\"format\":\"date_time\"}],\"script_fields\":{},\"track_total_hits\":-1,\"aggregations\":{\"gridSplit\":{\"geotile_grid\":{\"field\":\"OriginLocation\",\"precision\":7,\"size\":65535,\"shard_size\":65535,\"bounds\":{\"top_left\":{\"lat\":55.77657,\"lon\":-135.0},\"bottom_right\":{\"lat\":40.9799,\"lon\":-90.0}}},\"aggregations\":{\"gridCentroid\":{\"geo_centroid\":{\"field\":\"OriginLocation\"}},\"sum_of_FlightDelayMin\":{\"sum\":{\"field\":\"FlightDelayMin\"}}}}},\"runtime_mappings\":{\"hour_of_day\":{\"type\":\"long\",\"script\":{\"source\":\"emit(doc['timestamp'].value.getHour());\"}}}}",
+        "runtime_mappings.hour_of_day.script.source": "emit(doc['timestamp'].value.getHour());",
+        "_source.includes": [],
+        "query.bool.filter.bool.must.exists.boost": 1,
+        "query.bool.filter.bool.must.geo_bounding_box.OriginLocation.bottom_right": 40.9799,
+        "query.bool.filter.range.timestamp.gte": "2025-01-02T18:57:24.199Z",
+        "query_shape_array": [
+          "_source.excludes",
+          "_source.includes",
+          "aggregations.gridSplit.aggregations.gridCentroid.geo_centroid.field",
+          "aggregations.gridSplit.aggregations.sum_of_FlightDelayMin.sum.field",
+          "aggregations.gridSplit.geotile_grid.bounds.bottom_right.lat",
+          "aggregations.gridSplit.geotile_grid.bounds.bottom_right.lon",
+          "aggregations.gridSplit.geotile_grid.bounds.top_left.lat",
+          "aggregations.gridSplit.geotile_grid.bounds.top_left.lon",
+          "aggregations.gridSplit.geotile_grid.field",
+          "aggregations.gridSplit.geotile_grid.precision",
+          "aggregations.gridSplit.geotile_grid.shard_size",
+          "aggregations.gridSplit.geotile_grid.size",
+          "fields.field",
+          "fields.format",
+          "query.bool.boost",
+          "query.bool.filter.bool.boost",
+          "query.bool.filter.bool.must.exists.boost",
+          "query.bool.filter.bool.must.exists.field",
+          "query.bool.filter.bool.must.geo_bounding_box.OriginLocation.bottom_right",
+          "query.bool.filter.bool.must.geo_bounding_box.OriginLocation.bottom_right",
+          "query.bool.filter.bool.must.geo_bounding_box.OriginLocation.top_left",
+          "query.bool.filter.bool.must.geo_bounding_box.OriginLocation.top_left",
+          "query.bool.filter.bool.must.geo_bounding_box.boost",
+          "query.bool.filter.bool.must.geo_bounding_box.ignore_unmapped",
+          "query.bool.filter.bool.must.geo_bounding_box.validation_method",
+          "query.bool.filter.range.timestamp.boost",
+          "query.bool.filter.range.timestamp.format",
+          "query.bool.filter.range.timestamp.gte",
+          "query.bool.filter.range.timestamp.lte",
+          "runtime_mappings.hour_of_day.script.source",
+          "runtime_mappings.hour_of_day.type",
+          "size",
+          "stored_fields",
+          "track_total_hits"
+        ],
+        "query.bool.filter.bool.must.geo_bounding_box.OriginLocation.top_left": 55.77657,
+        "stats": "[]",
+        "aggregations.gridSplit.geotile_grid.bounds.bottom_right.lon": -90,
+        "runtime_mappings.hour_of_day.type": "long",
+        "fields.field": "timestamp",
+        "aggregations.gridSplit.geotile_grid.shard_size": 65535,
+        "id": "7380b190-1026-45c6-bc1e-814b375106b6;kibana:application:dashboards:7adfa750-4c81-11e8-b3d7-01146121b73d;maps:maps:23",
+        "query.bool.filter.bool.must.exists.field": "OriginLocation",
+        "aggregations.gridSplit.geotile_grid.size": 65535,
+        "aggregations.gridSplit.geotile_grid.bounds.top_left.lat": 55.77657,
+        "track_total_hits": -1,
+        "took": "869.2micros",
+        "aggregations.gridSplit.geotile_grid.bounds.top_left.lon": -135,
+        "fields.format": "date_time",
+        "query.bool.filter.range.timestamp.boost": 1,
+        "_source.excludes": [],
+        "query.bool.filter.bool.must.geo_bounding_box.ignore_unmapped": false,
+        "query.bool.filter.range.timestamp.format": "strict_date_optional_time",
+        "aggregations.gridSplit.geotile_grid.field": "OriginLocation",
+        "query.bool.filter.bool.boost": 1,
+        "search_type": "QUERY_THEN_FETCH",
+        "query.bool.filter.bool.must.geo_bounding_box.validation_method": "STRICT",
+        "query.bool.filter.bool.must.geo_bounding_box.boost": 1,
+        "total_hits": "0+ hits",
+        "query_shape_signature": "faacaaa0",
+        "size": 0,
+        "stored_fields": "*",
+        "aggregations.gridSplit.aggregations.gridCentroid.geo_centroid.field": "OriginLocation",
+        "aggregations.gridSplit.geotile_grid.bounds.bottom_right.lat": 40.9799,
+        "query.bool.boost": 1,
+        "aggregations.gridSplit.aggregations.sum_of_FlightDelayMin.sum.field": "FlightDelayMin"
+      },
+      "index": {
+        "name": "kibana_sample_data_flights"
+      },
+      "shard": {
+        "id": "0"
+      }
+    },
+    "host": {
+      "hostname": "es-prod-es-default-1",
+      "os": {
+        "kernel": "6.1.112+",
+        "codename": "focal",
+        "name": "Ubuntu",
+        "family": "debian",
+        "type": "linux",
+        "version": "20.04.6 LTS (Focal Fossa)",
+        "platform": "ubuntu"
+      },
+      "containerized": false,
+      "ip": [
+        "172.16.5.4"
+      ],
+      "name": "es-prod-es-default-1",
+      "id": "1q201BwbSFO-JKOC10wHwA",
+      "mac": [
+        "9A-91-70-5F-62-5B"
+      ],
+      "architecture": "x86_64"
+    },
+    "event": {
+      "duration": 0,
+      "ingested": "2025-01-09T18:57:34.692633605Z",
+      "created": "2025-01-09T18:57:26.385Z",
+      "kind": "event",
+      "module": "elasticsearch",
+      "category": "database",
+      "type": "info",
+      "dataset": "elasticsearch.index_search_slowlog"
+    },
+    "process": {
+      "thread": {
+        "name": "elasticsearch[es-prod-es-default-1][search][T#5]"
+      }
+    },
+    "message": "[kibana_sample_data_flights][0]",
+    "fileset": {
+      "name": "slowlog"
+    },
+    "orchestrator": {
+      "cluster": {
+        "name": "eck-gke-uam",
+        "url": "https://10.0.0.2"
+      }
+    },
+    "input": {
+      "type": "log"
+    },
+    "@timestamp": "2025-01-09T18:57:25.062Z",
+    "service": {
+      "name": "ES_ECS",
+      "type": "elasticsearch"
+    }
+  },

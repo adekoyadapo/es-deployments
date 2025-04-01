@@ -3,10 +3,10 @@
 apiVersion: elasticsearch.k8s.elastic.co/v1
 kind: Elasticsearch
 metadata:
-  name: es-prod
-  namespace: production
+  name: es-dev
+  namespace: development
 spec:
-  version: 8.15.3
+  version: 8.17.1
   nodeSets:
   - name: default
     count: 2
@@ -25,6 +25,30 @@ spec:
           scrape: es
         annotations:
           co.elastic.logs/enabled: "true"
+      spec:
+        containers:
+          - name: filebeat
+            env:
+            - name: ES_USERNAME
+              valueFrom:
+                secretKeyRef:
+                  key: username
+                  name: elastic-credentials
+            - name: ES_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  key: password
+                  name: elastic-credentials
+            command: ["/bin/sh", "-c"]
+            args:
+              - >
+                filebeat -c /etc/filebeat-config/filebeat.yml
+                -E setup.template.name=elastic-logs-8
+                -E setup.template.pattern=elastic-logs-8*
+                -E output.elasticsearch.index=elastic-logs-8
+                -E output.elasticsearch.username=$(ES_USERNAME)
+                -E output.elasticsearch.password=$(ES_PASSWORD)
+                -e
     volumeClaimTemplates:
     - metadata:
         name: elasticsearch-data # Do not change this name unless you set up a volume mount for the data path.
@@ -51,13 +75,13 @@ spec:
 apiVersion: kibana.k8s.elastic.co/v1
 kind: Kibana
 metadata:
-  name: kb-prod
-  namespace: production
+  name: kb-dev
+  namespace: development
 spec:
-  version: 8.15.3
+  version: 8.17.1
   count: 1
   elasticsearchRef:
-    name: es-prod
+    name: es-dev
   monitoring:
     metrics:
       elasticsearchRefs:
@@ -93,80 +117,31 @@ spec:
           limits:
             memory: 1.5Gi
             cpu: 1
----
-# Monitoring ckuster
-apiVersion: elasticsearch.k8s.elastic.co/v1
-kind: Elasticsearch
-metadata:
-  name: es-mon
-  namespace: observability
-spec:
-  version: 8.15.4
-  nodeSets:
-  - name: default
-    count: 2
-    podTemplate:
-      spec:
-        containers:
-        - name: elasticsearch
-          resources:
-            requests:
-              memory: 2Gi
-              cpu: 2
-            limits:
-              memory: 2.5Gi
-    config:
-      node.store.allow_mmap: false
-      xpack.http.ssl.verification_mode: "none"
-    volumeClaimTemplates:
-    - metadata:
-        name: elasticsearch-data # Do not change this name unless you set up a volume mount for the data path.
-      spec:
-        accessModes:
-        - ReadWriteOnce
-        resources:
-          requests:
-            storage: 50Gi
-        storageClassName: standard
-  auth:
-    fileRealm:
-    - secretName: elastic-credentials
-  remoteClusters:
-  - name: es-dev
-    elasticsearchRef:
-      name: es-dev
-      namespace: development
-  - name: es-prod
-    elasticsearchRef:
-      name: es-prod
-      namespace: production
----
-apiVersion: kibana.k8s.elastic.co/v1
-kind: Kibana
-metadata:
-  name: kb-mon
-  namespace: observability
-spec:
-  version: 8.15.4
-  count: 1
-  elasticsearchRef:
-    name: es-mon
-  config:
-    # enable the UI to reflect container level CPU usage, only displays info if CPU limits are set on the monitored ES cluster
-    # https://www.elastic.co/guide/en/kibana/current/monitoring-settings-kb.html
-    monitoring.ui.container.elasticsearch.enabled: true
-  podTemplate:
-    spec:
-      containers:
-      - name: kibana
+      - name: filebeat
         env:
-          - name: NODE_OPTIONS
-            value: "--max-old-space-size=1024"
-        resources:
-          requests:
-            memory: 1Gi
-            cpu: 0.5
-          limits:
-            memory: 2.5Gi
-            cpu: 1
-...
+          - name: ES_VERSION
+            value: "8.17.1"
+          - name: ES_CLUSTER
+            value: "es-dev"
+          - name: ES_USERNAME
+            valueFrom:
+              secretKeyRef:
+                key: username
+                name: elastic-credentials
+          - name: ES_PASSWORD
+            valueFrom:
+              secretKeyRef:
+                key: password
+                name: elastic-credentials
+        command: ["/bin/sh", "-c"]
+        args:
+          - >
+            filebeat -c /etc/filebeat-config/filebeat.yml
+            -E setup.template.name=elastic-logs-8
+            -E setup.template.pattern=elastic-logs-8*
+            -E output.elasticsearch.index=elastic-logs-8
+            -E output.elasticsearch.username=$(ES_USERNAME)
+            -E output.elasticsearch.password=$(ES_PASSWORD)
+            -E processors.2.add_fields.fields={service.name:$(ES_CLUSTER)} 
+            -E processors.2.add_fields.fields={service.version:$(ES_VERSION)}
+            -e

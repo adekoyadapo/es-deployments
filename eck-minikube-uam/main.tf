@@ -128,8 +128,8 @@ resource "time_sleep" "wait" {
 }
 
 data "kubernetes_ingress_v1" "ingress" {
-  depends_on = [ time_sleep.wait ]
-  for_each = local.es_deployments
+  depends_on = [time_sleep.wait]
+  for_each   = local.es_deployments
   metadata {
     name      = each.value
     namespace = each.key

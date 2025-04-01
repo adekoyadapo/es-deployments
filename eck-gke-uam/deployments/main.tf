@@ -16,35 +16,14 @@ locals {
   }
 }
 
-resource "kubernetes_cluster_role_binding" "cluster-admin-binding" {
-  metadata {
-    name = "cluster-role-binding"
-  }
-  role_ref {
-    api_group = "rbac.authorization.k8s.io"
-    kind      = "ClusterRole"
-    name      = "cluster-admin"
-  }
-  subject {
-    kind      = "User"
-    name      = var.email
-    api_group = "rbac.authorization.k8s.io"
-  }
-  subject {
-    kind      = "ServiceAccount"
-    name      = "default"
-    namespace = "kube-system"
-  }
-  subject {
-    kind      = "Group"
-    name      = "system:masters"
-    api_group = "rbac.authorization.k8s.io"
-  }
-
-  depends_on = [google_container_cluster.main]
+resource "random_password" "password" {
+  length           = 16
+  special          = false
+  override_special = "!#$%&*()-_=+[]{}<>:?@"
 }
 
 resource "helm_release" "charts" {
+  provider = helm
   for_each = var.helm_release
   name     = each.key
 
@@ -65,7 +44,6 @@ resource "helm_release" "charts" {
       value = set.value["value"]
     }
   }
-  depends_on = [google_container_cluster.main]
 }
 
 resource "time_sleep" "lb_ip" {
@@ -142,10 +120,10 @@ resource "time_sleep" "wait" {
 }
 
 data "kubernetes_ingress_v1" "ingress" {
-  for_each = local.es_deployments
+  depends_on = [time_sleep.wait]
+  for_each   = local.es_deployments
   metadata {
     name      = each.value
     namespace = each.key
   }
-
 }

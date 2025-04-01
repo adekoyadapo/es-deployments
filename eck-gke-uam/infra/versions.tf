@@ -6,23 +6,23 @@ terraform {
   required_providers {
     helm = {
       source  = "hashicorp/helm"
-      version = "2.15.0"
+      version = "2.17.0"
     }
     kubernetes = {
       source  = "hashicorp/kubernetes"
-      version = "2.32.0"
+      version = "2.35.1"
     }
     google = {
       source  = "hashicorp/google"
-      version = "5.36.0"
+      version = "6.19.0"
     }
     google-beta = {
       source  = "hashicorp/google-beta"
-      version = "5.36.0"
+      version = "6.19.0"
     }
     kubectl = {
       source  = "gavinbunney/kubectl"
-      version = "1.14.0"
+      version = "1.19.0"
     }
 
   }

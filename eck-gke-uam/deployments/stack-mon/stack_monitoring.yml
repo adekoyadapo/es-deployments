@@ -6,10 +6,10 @@ metadata:
   name: es-prod
   namespace: production
 spec:
-  version: 8.17.1
+  version: 8.16.2
   nodeSets:
   - name: default
-    count: 3
+    count: 2
     config:
       node.store.allow_mmap: false
       xpack.security.audit.enabled: true
@@ -29,10 +29,6 @@ spec:
         containers:
         - name: filebeat
           env:
-          - name: ES_VERSION
-            value: "8.17.1"
-          - name: ES_CLUSTER
-            value: "es-prod"
           - name: ES_USERNAME
             valueFrom:
               secretKeyRef:
@@ -53,6 +49,16 @@ spec:
               -E output.elasticsearch.username=$(ES_USERNAME)
               -E output.elasticsearch.password=$(ES_PASSWORD)
               -e
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data # Do not change this name unless you set up a volume mount for the data path.
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 50Gi
+        storageClassName: standard
   monitoring:
     metrics:
       elasticsearchRefs:
@@ -72,7 +78,7 @@ metadata:
   name: kb-prod
   namespace: production
 spec:
-  version: 8.17.1
+  version: 8.16.2
   count: 1
   elasticsearchRef:
     name: es-prod
@@ -114,7 +120,7 @@ spec:
       - name: filebeat
         env:
           - name: ES_VERSION
-            value: "8.17.1"
+            value: "8.16.2"
           - name: ES_CLUSTER
             value: "es-prod"
           - name: ES_USERNAME
@@ -150,7 +156,7 @@ spec:
   version: 8.17.1
   nodeSets:
   - name: default
-    count: 3
+    count: 2
     podTemplate:
       spec:
         containers:
@@ -164,6 +170,16 @@ spec:
     config:
       node.store.allow_mmap: false
       xpack.http.ssl.verification_mode: "none"
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data # Do not change this name unless you set up a volume mount for the data path.
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 50Gi
+        storageClassName: standard
   auth:
     fileRealm:
     - secretName: elastic-credentials

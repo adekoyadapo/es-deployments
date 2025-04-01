@@ -79,3 +79,5 @@ sa.json
 
 kube_config
 kubeconfig*
+
+.env

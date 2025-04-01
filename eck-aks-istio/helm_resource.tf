@@ -3,7 +3,8 @@ resource "helm_release" "main" {
   name     = each.key
 
   repository       = each.value.repository
-  chart            = each.value.chart
+  chart            = each.value.chart+
+  --********
   namespace        = each.value.namespace
   version          = each.value.version
   create_namespace = true

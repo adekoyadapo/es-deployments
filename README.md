@@ -17,3 +17,9 @@ Deployments to validate various Elastic Search cluster deployments in different 
 - Istio GW - 1.24.0
     - [ECK Minikube Istio](./eck-minikube-istio) with Metallb for LB IP allocation
     - [ECK AKS Istio](./eck-aks-istio)
+- GCP
+    - [ECK on GCP](./eck-gke-uam)
+- EKS
+    - [EKS cluster](./eks-cluster/)
+- Elatic Cloud
+    - [EC Cloud](./ec-cloud/)

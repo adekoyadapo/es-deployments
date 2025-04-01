@@ -5,23 +5,19 @@
 
 | Name | Version |
 |------|---------|
-| <a name="requirement_google"></a> [google](#requirement\_google) | 5.36.0 |
-| <a name="requirement_google-beta"></a> [google-beta](#requirement\_google-beta) | 5.36.0 |
-| <a name="requirement_helm"></a> [helm](#requirement\_helm) | 2.15.0 |
-| <a name="requirement_kubectl"></a> [kubectl](#requirement\_kubectl) | 1.14.0 |
-| <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | 2.32.0 |
+| <a name="requirement_google"></a> [google](#requirement\_google) | 6.19.0 |
+| <a name="requirement_google-beta"></a> [google-beta](#requirement\_google-beta) | 6.19.0 |
+| <a name="requirement_helm"></a> [helm](#requirement\_helm) | 2.17.0 |
+| <a name="requirement_kubectl"></a> [kubectl](#requirement\_kubectl) | 1.19.0 |
+| <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | 2.35.1 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_google"></a> [google](#provider\_google) | 5.36.0 |
-| <a name="provider_helm"></a> [helm](#provider\_helm) | 2.15.0 |
-| <a name="provider_kubectl"></a> [kubectl](#provider\_kubectl) | 1.14.0 |
-| <a name="provider_kubernetes"></a> [kubernetes](#provider\_kubernetes) | 2.32.0 |
-| <a name="provider_local"></a> [local](#provider\_local) | 2.5.2 |
-| <a name="provider_random"></a> [random](#provider\_random) | 3.6.3 |
-| <a name="provider_time"></a> [time](#provider\_time) | 0.12.1 |
+| <a name="provider_google"></a> [google](#provider\_google) | 6.19.0 |
+| <a name="provider_local"></a> [local](#provider\_local) | n/a |
+| <a name="provider_random"></a> [random](#provider\_random) | n/a |
 
 ## Modules
 
@@ -35,28 +31,15 @@
 
 | Name | Type |
 |------|------|
-| [google_container_cluster.main](https://registry.terraform.io/providers/hashicorp/google/5.36.0/docs/resources/container_cluster) | resource |
-| [google_project_iam_member.sa_iam](https://registry.terraform.io/providers/hashicorp/google/5.36.0/docs/resources/project_iam_member) | resource |
-| [google_service_account.cluster_serviceaccount](https://registry.terraform.io/providers/hashicorp/google/5.36.0/docs/resources/service_account) | resource |
-| [helm_release.charts](https://registry.terraform.io/providers/hashicorp/helm/2.15.0/docs/resources/release) | resource |
-| [kubectl_manifest.beats](https://registry.terraform.io/providers/gavinbunney/kubectl/1.14.0/docs/resources/manifest) | resource |
-| [kubectl_manifest.certs](https://registry.terraform.io/providers/gavinbunney/kubectl/1.14.0/docs/resources/manifest) | resource |
-| [kubectl_manifest.eck](https://registry.terraform.io/providers/gavinbunney/kubectl/1.14.0/docs/resources/manifest) | resource |
-| [kubectl_manifest.namespace](https://registry.terraform.io/providers/gavinbunney/kubectl/1.14.0/docs/resources/manifest) | resource |
-| [kubernetes_cluster_role_binding.cluster-admin-binding](https://registry.terraform.io/providers/hashicorp/kubernetes/2.32.0/docs/resources/cluster_role_binding) | resource |
+| [google_container_cluster.main](https://registry.terraform.io/providers/hashicorp/google/6.19.0/docs/resources/container_cluster) | resource |
+| [google_project_iam_member.sa_iam](https://registry.terraform.io/providers/hashicorp/google/6.19.0/docs/resources/project_iam_member) | resource |
+| [google_service_account.cluster_serviceaccount](https://registry.terraform.io/providers/hashicorp/google/6.19.0/docs/resources/service_account) | resource |
 | [local_file.kubeconfig](https://registry.terraform.io/providers/hashicorp/local/latest/docs/resources/file) | resource |
 | [random_password.password](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
 | [random_string.suffix](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) | resource |
-| [time_sleep.lb_ip](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
-| [time_sleep.wait](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
-| [google_client_config.main](https://registry.terraform.io/providers/hashicorp/google/5.36.0/docs/data-sources/client_config) | data source |
-| [google_container_cluster.main](https://registry.terraform.io/providers/hashicorp/google/5.36.0/docs/data-sources/container_cluster) | data source |
-| [google_iam_role.iam_role](https://registry.terraform.io/providers/hashicorp/google/5.36.0/docs/data-sources/iam_role) | data source |
-| [kubectl_path_documents.beats](https://registry.terraform.io/providers/gavinbunney/kubectl/1.14.0/docs/data-sources/path_documents) | data source |
-| [kubectl_path_documents.certs](https://registry.terraform.io/providers/gavinbunney/kubectl/1.14.0/docs/data-sources/path_documents) | data source |
-| [kubectl_path_documents.namespace](https://registry.terraform.io/providers/gavinbunney/kubectl/1.14.0/docs/data-sources/path_documents) | data source |
-| [kubernetes_ingress_v1.ingress](https://registry.terraform.io/providers/hashicorp/kubernetes/2.32.0/docs/data-sources/ingress_v1) | data source |
-| [kubernetes_service.lb_ip](https://registry.terraform.io/providers/hashicorp/kubernetes/2.32.0/docs/data-sources/service) | data source |
+| [google_client_config.main](https://registry.terraform.io/providers/hashicorp/google/6.19.0/docs/data-sources/client_config) | data source |
+| [google_container_cluster.main](https://registry.terraform.io/providers/hashicorp/google/6.19.0/docs/data-sources/container_cluster) | data source |
+| [google_iam_role.iam_role](https://registry.terraform.io/providers/hashicorp/google/6.19.0/docs/data-sources/iam_role) | data source |
 
 ## Inputs
 
@@ -82,8 +65,5 @@
 
 ## Outputs
 
-| Name | Description |
-|------|-------------|
-| <a name="output_es_credentials"></a> [es\_credentials](#output\_es\_credentials) | Elastic Admin credentials |
-| <a name="output_ingress"></a> [ingress](#output\_ingress) | Kubernetes Ingress Endpoints |
+No outputs.
 <!-- END_TF_DOCS -->

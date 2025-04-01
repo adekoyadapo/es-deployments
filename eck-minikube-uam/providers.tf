@@ -2,7 +2,7 @@ terraform {
   required_providers {
     minikube = {
       source  = "scott-the-programmer/minikube"
-      version = "0.4.0"
+      version = "0.4.4"
     }
     kubectl = {
       source  = "alekc/kubectl"
@@ -28,7 +28,7 @@ terraform {
 }
 
 provider "minikube" {
-  kubernetes_version = "v1.30.0"
+  kubernetes_version = "v1.32.0"
 }
 
 provider "helm" {

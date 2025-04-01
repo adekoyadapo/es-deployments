@@ -5,12 +5,6 @@ data "google_container_cluster" "main" {
   name = google_container_cluster.main.name
 }
 
-resource "random_password" "password" {
-  length           = 16
-  special          = false
-  override_special = "!#$%&*()-_=+[]{}<>:?@"
-}
-
 module "vpc" {
   source  = "terraform-google-modules/network/google//modules/vpc"
   version = "~> 9.1"
@@ -130,8 +124,12 @@ resource "local_file" "kubeconfig" {
 
   file_permission = "0600"
   content         = module.gke_auth.kubeconfig_raw
-  filename        = "${path.cwd}/kubeconfig-${google_container_cluster.main.name}"
+  filename        = "../${path.cwd}/kubeconfig-${google_container_cluster.main.name}"
   lifecycle {
     ignore_changes = [content]
+  }
+  provisioner "local-exec" {
+    command = "rm -rf ${self.filename}"
+    when    = destroy
   }
 }

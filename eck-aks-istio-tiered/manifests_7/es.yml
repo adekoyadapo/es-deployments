@@ -1,0 +1,48 @@
+---
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: es
+  namespace: eck
+spec:
+  version: ${ecs_version}
+  secureSettings:
+  - secretName: azure-snapshot-secrets
+  nodeSets:
+  - name: default
+    count: 3
+    config:
+      node.store.allow_mmap: false
+      azure.client.default.endpoint_suffix: "ignored;BlobEndpoint=https://${sc_name}.blob.core.windows.net"
+    podTemplate:
+      spec:
+        securityContext:
+          runAsUser: 1000
+          runAsGroup: 1000
+          fsGroup: 1000
+        initContainers:
+        - name: elastic-internal-init-keystore
+          securityContext:
+            runAsUser: 1000
+            runAsGroup: 1000
+          command:
+            - sh
+            - -c
+            - |
+              echo ${sc_name} | bin/elasticsearch-keystore add --force azure.client.default.account
+              echo ${sc_key} | bin/elasticsearch-keystore add --force azure.client.default.key
+        - name: install-plugins
+          command:
+            - sh
+            - -c
+            - |
+              bin/elasticsearch-plugin install --batch repository-azure
+      metadata:
+        annotations:
+          traffic.sidecar.istio.io/includeInboundPorts: "*"
+          traffic.sidecar.istio.io/excludeOutboundPorts: "9300"
+          traffic.sidecar.istio.io/excludeInboundPorts: "9300"
+  http:
+    tls:
+      selfSignedCertificate:
+        disabled: true

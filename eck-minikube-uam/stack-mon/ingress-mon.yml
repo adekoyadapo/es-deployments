@@ -6,6 +6,7 @@ metadata:
   namespace: observability
   annotations:
     nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.ingress.kubernetes.io/proxy-body-size: "100m"
 spec:
   ingressClassName: nginx
   rules:

@@ -1,0 +1,98 @@
+---
+# ES and Kibana resources
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: es-cluster-1
+  namespace: cluster-1
+spec:
+  version: 8.18.1
+  nodeSets:
+  - name: default
+    count: 2
+    podTemplate:
+      spec:
+        containers:
+        - name: elasticsearch
+          resources:
+            requests:
+              memory: 2Gi
+              cpu: 2
+            limits:
+              memory: 2.5Gi
+    config:
+      node.store.allow_mmap: false
+      xpack.http.ssl.verification_mode: "none"
+  auth:
+    fileRealm:
+    - secretName: elastic-credentials
+---
+apiVersion: kibana.k8s.elastic.co/v1
+kind: Kibana
+metadata:
+  name: kb-cluster-1
+  namespace: cluster-1
+spec:
+  version: 8.18.1
+  count: 1
+  elasticsearchRef:
+    name: es-cluster-1
+---
+# Monitoring ckuster
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: es-cluster-2
+  namespace: cluster-2
+spec:
+  version: 8.18.1
+  nodeSets:
+  - name: default
+    count: 2
+    podTemplate:
+      spec:
+        containers:
+        - name: elasticsearch
+          resources:
+            requests:
+              memory: 2Gi
+              cpu: 2
+            limits:
+              memory: 2.5Gi
+    config:
+      node.store.allow_mmap: false
+      xpack.http.ssl.verification_mode: "none"
+  auth:
+    fileRealm:
+    - secretName: elastic-credentials
+  remoteClusters:
+  - name: es-cluster-1
+    elasticsearchRef:
+      name: es-cluster-1
+      namespace: cluster-1
+---
+apiVersion: kibana.k8s.elastic.co/v1
+kind: Kibana
+metadata:
+  name: kb-cluster-2
+  namespace: cluster-2
+spec:
+  version: 8.18.1
+  count: 1
+  elasticsearchRef:
+    name: es-cluster-2
+  podTemplate:
+    spec:
+      containers:
+      - name: kibana
+        env:
+          - name: NODE_OPTIONS
+            value: "--max-old-space-size=1024"
+        resources:
+          requests:
+            memory: 1Gi
+            cpu: 0.5
+          limits:
+            memory: 2.5Gi
+            cpu: 1
+...

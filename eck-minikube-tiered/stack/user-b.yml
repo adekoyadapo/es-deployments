@@ -1,0 +1,10 @@
+---
+kind: Secret
+apiVersion: v1
+metadata:
+  name: elastic-credentials
+  namespace: cluster-2
+stringData:
+  username: ${username}
+  password: ${password}
+  roles: superuser

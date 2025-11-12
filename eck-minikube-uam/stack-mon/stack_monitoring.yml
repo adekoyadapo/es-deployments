@@ -6,7 +6,7 @@ metadata:
   name: es-prod
   namespace: production
 spec:
-  version: 8.17.1
+  version: 8.18.1
   nodeSets:
   - name: default
     count: 3
@@ -30,7 +30,7 @@ spec:
         - name: filebeat
           env:
           - name: ES_VERSION
-            value: "8.17.1"
+            value: "8.18.1"
           - name: ES_CLUSTER
             value: "es-prod"
           - name: ES_USERNAME
@@ -47,9 +47,9 @@ spec:
           args:
             - >
               filebeat -c /etc/filebeat-config/filebeat.yml
-              -E setup.template.name=elastic-logs-8
-              -E setup.template.pattern=elastic-logs-8*
-              -E output.elasticsearch.index=elastic-logs-8
+              -E setup.template.name=elastic-cloud-logs
+              -E setup.template.pattern=elastic-cloud-logs*
+              -E output.elasticsearch.index=elastic-cloud-logs
               -E output.elasticsearch.username=$(ES_USERNAME)
               -E output.elasticsearch.password=$(ES_PASSWORD)
               -e
@@ -72,7 +72,7 @@ metadata:
   name: kb-prod
   namespace: production
 spec:
-  version: 8.17.1
+  version: 8.18.1
   count: 1
   elasticsearchRef:
     name: es-prod
@@ -114,7 +114,7 @@ spec:
       - name: filebeat
         env:
           - name: ES_VERSION
-            value: "8.17.1"
+            value: "8.18.1"
           - name: ES_CLUSTER
             value: "es-prod"
           - name: ES_USERNAME
@@ -131,9 +131,9 @@ spec:
         args:
           - >
             filebeat -c /etc/filebeat-config/filebeat.yml
-            -E setup.template.name=elastic-logs-8
-            -E setup.template.pattern=elastic-logs-8*
-            -E output.elasticsearch.index=elastic-logs-8
+            -E setup.template.name=elastic-cloud-logs
+            -E setup.template.pattern=elastic-cloud-logs*
+            -E output.elasticsearch.index=elastic-cloud-logs
             -E output.elasticsearch.username=$(ES_USERNAME)
             -E output.elasticsearch.password=$(ES_PASSWORD)
             -E processors.2.add_fields.fields={service.name:$(ES_CLUSTER)} 
@@ -147,7 +147,7 @@ metadata:
   name: es-mon
   namespace: observability
 spec:
-  version: 8.17.1
+  version: 8.18.1
   nodeSets:
   - name: default
     count: 3
@@ -168,10 +168,6 @@ spec:
     fileRealm:
     - secretName: elastic-credentials
   remoteClusters:
-  - name: es-dev
-    elasticsearchRef:
-      name: es-dev
-      namespace: development
   - name: es-prod
     elasticsearchRef:
       name: es-prod
@@ -183,7 +179,7 @@ metadata:
   name: kb-mon
   namespace: observability
 spec:
-  version: 8.17.1
+  version: 8.18.1
   count: 1
   elasticsearchRef:
     name: es-mon

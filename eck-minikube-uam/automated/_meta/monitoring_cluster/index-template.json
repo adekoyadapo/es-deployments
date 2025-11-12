@@ -1,0 +1,12 @@
+{
+    "template": {
+      "settings": {
+        "index": {
+          "default_pipeline": "enrich-ids",
+          "final_pipeline": "enrich-ids"
+        }
+      }
+    },
+    "index_patterns": ["kibana-transform-*"],
+    "composed_of": ["transform-obj"]
+  }

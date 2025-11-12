@@ -1,0 +1,17 @@
+---
+apiVersion: networking.istio.io/v1alpha3
+kind: Gateway
+metadata:
+  name: gw-1
+  namespace: cluster-1
+spec:
+  selector:
+    istio: ingressgateway # Matches the Istio ingress gateway deployment
+  servers:
+  - port:
+      number: 80
+      name: http
+      protocol: HTTP
+    hosts:
+    - es-1.${domain}
+    - kb-1.${domain}

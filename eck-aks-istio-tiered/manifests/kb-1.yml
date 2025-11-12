@@ -1,0 +1,14 @@
+apiVersion: kibana.k8s.elastic.co/v1
+kind: Kibana
+metadata:
+  name: kb-1
+  namespace: cluster-1 
+spec:
+  version: ${ecs_version}
+  count: 1
+  elasticsearchRef:
+    name: es-1
+  http:
+    tls:
+      selfSignedCertificate:
+        disabled: true

@@ -9,32 +9,31 @@ Terraform configuration files to provision an EKS cluster on AWS.
 | Name | Version |
 |------|---------|
 | <a name="requirement_terraform"></a> [terraform](#requirement\_terraform) | ~> 1.3 |
-| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 5.47.0 |
-| <a name="requirement_cloudinit"></a> [cloudinit](#requirement\_cloudinit) | ~> 2.3.4 |
+| <a name="requirement_aws"></a> [aws](#requirement\_aws) | ~> 5.84.0 |
+| <a name="requirement_helm"></a> [helm](#requirement\_helm) | ~> 2.10.1 |
+| <a name="requirement_kubectl"></a> [kubectl](#requirement\_kubectl) | ~> 1.14 |
+| <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | ~> 2.22.0 |
 | <a name="requirement_random"></a> [random](#requirement\_random) | ~> 3.6.1 |
-| <a name="requirement_tls"></a> [tls](#requirement\_tls) | ~> 4.0.5 |
+| <a name="requirement_time"></a> [time](#requirement\_time) | 0.9.1 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
-| <a name="provider_aws"></a> [aws](#provider\_aws) | ~> 5.47.0 |
+| <a name="provider_aws"></a> [aws](#provider\_aws) | ~> 5.84.0 |
 | <a name="provider_random"></a> [random](#provider\_random) | ~> 3.6.1 |
 
 ## Modules
 
 | Name | Source | Version |
 |------|--------|---------|
-| <a name="module_eks"></a> [eks](#module\_eks) | terraform-aws-modules/eks/aws | 20.8.5 |
-| <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | 5.8.1 |
+| <a name="module_eks"></a> [eks](#module\_eks) | terraform-aws-modules/eks/aws | 20.33.1 |
+| <a name="module_vpc"></a> [vpc](#module\_vpc) | terraform-aws-modules/vpc/aws | 5.17.0 |
 
 ## Resources
 
 | Name | Type |
 |------|------|
-| [aws_iam_role.bedrock_role](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role) | resource |
-| [aws_iam_role_policy_attachment.bedrock_role_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_role_policy_attachment) | resource |
-| [aws_iam_user_policy_attachment.bedrock_user_policy](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/resources/iam_user_policy_attachment) | resource |
 | [random_string.suffix](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/string) | resource |
 | [aws_availability_zones.available](https://registry.terraform.io/providers/hashicorp/aws/latest/docs/data-sources/availability_zones) | data source |
 
@@ -43,6 +42,8 @@ Terraform configuration files to provision an EKS cluster on AWS.
 | Name | Description | Type | Default | Required |
 |------|-------------|------|---------|:--------:|
 | <a name="input_region"></a> [region](#input\_region) | AWS region | `string` | `"us-east-1"` | no |
+| <a name="input_tags"></a> [tags](#input\_tags) | tags | `map(string)` | <pre>{<br/>  "environment": "test",<br/>  "owner": "eck-uam"<br/>}</pre> | no |
+| <a name="input_vpc_cidr"></a> [vpc\_cidr](#input\_vpc\_cidr) | vpc cider | `string` | `"10.1.0.0/16"` | no |
 
 ## Outputs
 

@@ -1,0 +1,30 @@
+{
+    "main_cluster": {
+      "host": "es-prod.192-168-105-3.sslip.io",
+      "port": "443",
+      "scheme": "https",
+      "username": "admin",
+      "password": "EaLr6YkAw5VW3HwX"
+    },
+    "monitoring_cluster": {
+      "host": "es-mon.192-168-105-3.sslip.io",
+      "port": "443",
+      "scheme": "https", 
+      "username": "admin",
+      "password": "EaLr6YkAw5VW3HwX"
+    },
+    "watcher_main" : {
+      "host": "es-prod-es-http.production.svc",
+      "api_key": "SFdBbkZKZ0JEbGl2RWhkbW5MNU86bXVtSzFXLS1RQ0NKd0hYOE41X3V3Zw=="
+    },
+    "remote_cluster": {
+      "proxy_address": "es-prod-es-transport.production.svc:9300",
+      "server_name": "main"
+    },
+    "watcher_monitoring" : {
+      "host": "es-mon-es-http.observability.svc",
+      "api_key": "Rl9RbkZKZ0JhNzBoRHZvZG0tSzk6cTRlaGYwQ1NUNEtqbmVlMWQ0aWMwUQ=="
+    }
+  }
+  
+  

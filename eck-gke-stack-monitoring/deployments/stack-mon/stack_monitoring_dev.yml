@@ -1,0 +1,79 @@
+---
+# ES and Kibana resources
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: es-dev
+  namespace: development
+spec:
+  version: 8.19.3
+  nodeSets:
+  - name: default
+    count: 2
+    config:
+      node.store.allow_mmap: false
+      xpack.http.ssl.verification_mode: "none"
+    volumeClaimTemplates:
+    - metadata:
+        name: elasticsearch-data # Do not change this name unless you set up a volume mount for the data path.
+      spec:
+        accessModes:
+        - ReadWriteOnce
+        resources:
+          requests:
+            storage: 50Gi
+        storageClassName: standard
+  monitoring:
+    metrics:
+      elasticsearchRefs:
+      - name: es-mon
+        namespace: observability
+    logs:
+      elasticsearchRefs:
+      - name: es-mon
+        namespace: observability
+  auth:
+    fileRealm:
+    - secretName: elastic-credentials
+---
+apiVersion: kibana.k8s.elastic.co/v1
+kind: Kibana
+metadata:
+  name: kb-dev
+  namespace: development
+spec:
+  version: 8.19.3
+  count: 1
+  elasticsearchRef:
+    name: es-dev
+  monitoring:
+    metrics:
+      elasticsearchRefs:
+      - name: es-mon
+        namespace: observability
+    logs:
+      elasticsearchRefs:
+      - name: es-mon
+        namespace: observability
+  config:
+    # https://www.elastic.co/guide/en/kibana/current/monitoring-metricbeat.html
+    monitoring.kibana.collection.enabled: true
+  podTemplate:
+    metadata:
+      labels:
+        scrape: kb
+      annotations:
+        co.elastic.logs/enabled: "true"
+    spec:
+      containers:
+      - name: kibana
+        env:
+          - name: NODE_OPTIONS
+            value: "--max-old-space-size=1024"
+        resources:
+          requests:
+            memory: 1Gi
+            cpu: 0.5
+          limits:
+            memory: 1.5Gi
+            cpu: 1

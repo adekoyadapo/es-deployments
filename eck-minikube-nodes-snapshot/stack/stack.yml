@@ -1,0 +1,72 @@
+---
+# ES and Kibana resources
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: es-cluster-1
+  namespace: cluster-1
+spec:
+  version: 9.2.0-snapshot
+  nodeSets:
+  - name: master
+    count: 1
+    podTemplate:
+      spec:
+        containers:
+        - name: elasticsearch
+          resources:
+            requests:
+              memory: 2Gi
+              cpu: 2
+            limits:
+              memory: 2.5Gi
+    config:
+      node.roles: ["master", "remote_cluster_client","transform", "ingest"]
+      node.store.allow_mmap: false
+      xpack.http.ssl.verification_mode: "none"
+  - name: data
+    count: 3
+    podTemplate:
+      spec:
+        containers:
+        - name: elasticsearch
+          resources:
+            requests:
+              memory: 2Gi
+              cpu: 2
+            limits:
+              memory: 2.5Gi
+    config:
+      node.roles: ["data", "ingest", "data_hot", "data_frozen", "remote_cluster_client", "transform"]
+      node.store.allow_mmap: false
+      xpack.http.ssl.verification_mode: "none"
+  - name: ml
+    count: 1
+    podTemplate:
+      spec:
+        containers:
+        - name: elasticsearch
+          resources:
+            requests:
+              memory: 2Gi
+              cpu: 2
+            limits:
+              memory: 4Gi
+    config:
+      node.roles: ["ml", "remote_cluster_client", "transform"]
+      node.store.allow_mmap: false
+      xpack.http.ssl.verification_mode: "none"
+  auth:
+    fileRealm:
+    - secretName: elastic-credentials
+---
+apiVersion: kibana.k8s.elastic.co/v1
+kind: Kibana
+metadata:
+  name: kb-cluster-1
+  namespace: cluster-1
+spec:
+  version: 9.2.0-snapshot
+  count: 1
+  elasticsearchRef:
+    name: es-cluster-1

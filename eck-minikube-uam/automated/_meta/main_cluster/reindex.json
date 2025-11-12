@@ -1,0 +1,9 @@
+{
+    "source" : {
+        "index" : ".kibana_analytics"
+    },
+    "dest" : {
+        "index" : "kibana_objects-01",
+        "pipeline" : "kibana-objectid"
+    }
+  }

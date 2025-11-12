@@ -1,0 +1,487 @@
+{
+  "template": {
+    "settings": {
+      "index": {
+        "final_pipeline": "kibana-objectid"
+      }
+    },
+    "mappings": {
+      "dynamic": "false",
+      "properties": {
+        "kibana.saved_object.id": {
+          "type": "keyword"
+        },
+        "title": {
+          "type": "keyword"
+        },
+        "canvas-element": {
+          "dynamic": "false",
+          "properties": {
+            "@created": {
+              "type": "date"
+            },
+            "@timestamp": {
+              "type": "date"
+            },
+            "content": {
+              "type": "text"
+            },
+            "help": {
+              "type": "text"
+            },
+            "image": {
+              "type": "text"
+            },
+            "name": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            }
+          }
+        },
+        "canvas-workpad": {
+          "dynamic": "false",
+          "properties": {
+            "@created": {
+              "type": "date"
+            },
+            "@timestamp": {
+              "type": "date"
+            },
+            "name": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            }
+          }
+        },
+        "canvas-workpad-template": {
+          "dynamic": "false",
+          "properties": {
+            "help": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "name": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "tags": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "template_key": {
+              "type": "keyword"
+            }
+          }
+        },
+        "coreMigrationVersion": {
+          "type": "keyword"
+        },
+        "created_at": {
+          "type": "date"
+        },
+        "dashboard": {
+          "properties": {
+            "controlGroupInput": {
+              "properties": {
+                "chainingSystem": {
+                  "type": "keyword",
+                  "index": false,
+                  "doc_values": false
+                },
+                "controlStyle": {
+                  "type": "keyword",
+                  "index": false,
+                  "doc_values": false
+                },
+                "ignoreParentSettingsJSON": {
+                  "type": "text",
+                  "index": false
+                }
+              }
+            },
+            "description": {
+              "type": "text"
+            },
+            "hits": {
+              "type": "integer",
+              "index": false,
+              "doc_values": false
+            },
+            "kibanaSavedObjectMeta": {
+              "properties": {
+                "searchSourceJSON": {
+                  "type": "text",
+                  "index": false
+                }
+              }
+            },
+            "refreshInterval": {
+              "properties": {
+                "display": {
+                  "type": "keyword",
+                  "index": false,
+                  "doc_values": false
+                },
+                "pause": {
+                  "type": "boolean",
+                  "doc_values": false,
+                  "index": false
+                },
+                "section": {
+                  "type": "integer",
+                  "index": false,
+                  "doc_values": false
+                },
+                "value": {
+                  "type": "integer",
+                  "index": false,
+                  "doc_values": false
+                }
+              }
+            },
+            "timeFrom": {
+              "type": "keyword",
+              "index": false,
+              "doc_values": false
+            },
+            "timeRestore": {
+              "type": "boolean",
+              "doc_values": false,
+              "index": false
+            },
+            "timeTo": {
+              "type": "keyword",
+              "index": false,
+              "doc_values": false
+            },
+            "title": {
+              "type": "text",
+              "copy_to": "title",
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "version": {
+              "type": "integer"
+            }
+          }
+        },
+        "event-annotation-group": {
+          "dynamic": "false",
+          "properties": {
+            "description": {
+              "type": "text"
+            },
+            "title": {
+              "type": "text",
+              "copy_to": "title",
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            }
+          }
+        },
+        "graph-workspace": {
+          "properties": {
+            "description": {
+              "type": "text"
+            },
+            "kibanaSavedObjectMeta": {
+              "properties": {
+                "searchSourceJSON": {
+                  "type": "text"
+                }
+              }
+            },
+            "legacyIndexPatternRef": {
+              "type": "text",
+              "index": false
+            },
+            "numLinks": {
+              "type": "integer"
+            },
+            "numVertices": {
+              "type": "integer"
+            },
+            "title": {
+              "type": "text",
+              "copy_to": "title",
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "version": {
+              "type": "integer"
+            },
+            "wsState": {
+              "type": "text"
+            }
+          }
+        },
+        "index-pattern": {
+          "dynamic": "false",
+          "properties": {
+            "name": {
+              "type": "text",
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "title": {
+              "type": "text",
+              "copy_to": "title",
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "type": {
+              "type": "keyword"
+            }
+          }
+        },
+        "kql-telemetry": {
+          "type": "object",
+          "dynamic": "false"
+        },
+        "lens": {
+          "properties": {
+            "description": {
+              "type": "text"
+            },
+            "state": {
+              "type": "object",
+              "dynamic": "false"
+            },
+            "title": {
+              "type": "text",
+              "copy_to": "title",
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "visualizationType": {
+              "type": "keyword"
+            }
+          }
+        },
+        "lens-ui-telemetry": {
+          "properties": {
+            "count": {
+              "type": "integer"
+            },
+            "date": {
+              "type": "date"
+            },
+            "name": {
+              "type": "keyword"
+            },
+            "type": {
+              "type": "keyword"
+            }
+          }
+        },
+        "links": {
+          "dynamic": "false",
+          "properties": {
+            "description": {
+              "type": "text"
+            },
+            "links": {
+              "type": "object",
+              "dynamic": "false"
+            },
+            "title": {
+              "type": "text",
+              "copy_to": "title",
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            }
+          }
+        },
+        "managed": {
+          "type": "boolean"
+        },
+        "map": {
+          "properties": {
+            "bounds": {
+              "type": "object",
+              "dynamic": "false"
+            },
+            "description": {
+              "type": "text"
+            },
+            "layerListJSON": {
+              "type": "text"
+            },
+            "mapStateJSON": {
+              "type": "text"
+            },
+            "title": {
+              "type": "text",
+              "copy_to": "title",
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "uiStateJSON": {
+              "type": "text"
+            },
+            "version": {
+              "type": "integer"
+            }
+          }
+        },
+        "namespace": {
+          "type": "keyword"
+        },
+        "namespaces": {
+          "type": "keyword"
+        },
+        "originId": {
+          "type": "keyword"
+        },
+        "query": {
+          "dynamic": "false",
+          "properties": {
+            "description": {
+              "type": "text"
+            },
+            "title": {
+              "type": "text",
+              "copy_to": "title",
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            }
+          }
+        },
+        "references": {
+          "type": "nested",
+          "properties": {
+            "id": {
+              "type": "keyword"
+            },
+            "name": {
+              "type": "keyword"
+            },
+            "type": {
+              "type": "keyword"
+            }
+          }
+        },
+        "search": {
+          "dynamic": "false",
+          "properties": {
+            "description": {
+              "type": "text"
+            },
+            "title": {
+              "type": "text",
+              "copy_to": "title",
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            }
+          }
+        },
+        "search-session": {
+          "dynamic": "false",
+          "properties": {
+            "created": {
+              "type": "date"
+            },
+            "realmName": {
+              "type": "keyword"
+            },
+            "realmType": {
+              "type": "keyword"
+            },
+            "sessionId": {
+              "type": "keyword"
+            },
+            "username": {
+              "type": "keyword"
+            }
+          }
+        },
+        "search-telemetry": {
+          "type": "object",
+          "dynamic": "false"
+        },
+        "type": {
+          "type": "keyword"
+        },
+        "typeMigrationVersion": {
+          "type": "version"
+        },
+        "updated_at": {
+          "type": "date"
+        },
+        "visualization": {
+          "dynamic": "false",
+          "properties": {
+            "description": {
+              "type": "text"
+            },
+            "kibanaSavedObjectMeta": {
+              "type": "object"
+            },
+            "title": {
+              "type": "text",
+              "copy_to": "title",
+              "fields": {
+                "keyword": {
+                  "type": "keyword"
+                }
+              }
+            },
+            "version": {
+              "type": "integer"
+            }
+          }
+        }
+      }
+    }
+  }
+}

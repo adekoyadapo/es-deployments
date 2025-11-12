@@ -1,21 +1,26 @@
-# output "cloud_id" {
-#   value = {
-#     source = ec_deployment.source.elasticsearch.cloud_id,
-#   }
-# }
+output "cloud_id" {
+  value = {
+    source = ec_deployment.source.elasticsearch.cloud_id,
+  }
+}
 
-# output "endpoint" {
-#   value = {
-#     source = ec_deployment.source.elasticsearch.http_endpoint,
-#   }
-# }
+output "endpoint" {
+  value = {
+    source = ec_deployment.source.elasticsearch.http_endpoint,
+  }
+}
 
-# output "credentials" {
-#   value = {
-#     source = ec_deployment.source.elasticsearch_password,
-#   }
-#   sensitive = true
-# }
+output "credentials" {
+  value = {
+    source = ec_deployment.source.elasticsearch_password,
+  }
+  sensitive = true
+}
+
+output "api_key" {
+  value     = elasticstack_elasticsearch_security_api_key.api_key.encoded
+  sensitive = true
+}
 
 # output "env" {
 #   value     = <<EOL

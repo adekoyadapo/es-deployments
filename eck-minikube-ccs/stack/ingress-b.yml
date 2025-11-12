@@ -1,0 +1,37 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: es-ingress-cluster-2
+  namespace: cluster-2
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+    nginx.org/client-max-body-size: "10240m"
+    nginx.ingress.kubernetes.io/proxy-body-size: "10240m"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: kb-cluster-2.${domain}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: kb-cluster-2-kb-http
+            port:
+              number: 5601
+  - host: es-cluster-2.${domain}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: es-cluster-2-es-http
+            port:
+              number: 9200
+  tls:
+  - hosts:
+    - "*.sslip.io"
+    secretName: wildcard-tls-secret

@@ -1,0 +1,4 @@
+{
+    "index_patterns": ["kibana_objects*"],
+    "composed_of": ["kibana-objects"]
+  }

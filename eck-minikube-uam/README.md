@@ -5,24 +5,27 @@
 
 | Name | Version |
 |------|---------|
+| <a name="requirement_elasticstack"></a> [elasticstack](#requirement\_elasticstack) | ~> 0.11.16 |
 | <a name="requirement_external"></a> [external](#requirement\_external) | 2.3.3 |
 | <a name="requirement_helm"></a> [helm](#requirement\_helm) | ~> 2.10.1 |
 | <a name="requirement_http"></a> [http](#requirement\_http) | 3.4.4 |
 | <a name="requirement_kubectl"></a> [kubectl](#requirement\_kubectl) | >= 2.0.2 |
 | <a name="requirement_kubernetes"></a> [kubernetes](#requirement\_kubernetes) | ~> 2.22.0 |
-| <a name="requirement_minikube"></a> [minikube](#requirement\_minikube) | 0.4.0 |
+| <a name="requirement_minikube"></a> [minikube](#requirement\_minikube) | 0.4.4 |
 
 ## Providers
 
 | Name | Version |
 |------|---------|
+| <a name="provider_elasticstack.mon"></a> [elasticstack.mon](#provider\_elasticstack.mon) | 0.11.19 |
+| <a name="provider_elasticstack.prod"></a> [elasticstack.prod](#provider\_elasticstack.prod) | 0.11.19 |
 | <a name="provider_external"></a> [external](#provider\_external) | 2.3.3 |
 | <a name="provider_helm"></a> [helm](#provider\_helm) | 2.10.1 |
 | <a name="provider_kubectl"></a> [kubectl](#provider\_kubectl) | 2.1.3 |
 | <a name="provider_kubernetes"></a> [kubernetes](#provider\_kubernetes) | 2.22.0 |
-| <a name="provider_minikube"></a> [minikube](#provider\_minikube) | 0.4.0 |
-| <a name="provider_random"></a> [random](#provider\_random) | 3.6.3 |
-| <a name="provider_time"></a> [time](#provider\_time) | 0.12.1 |
+| <a name="provider_minikube"></a> [minikube](#provider\_minikube) | 0.4.4 |
+| <a name="provider_random"></a> [random](#provider\_random) | 3.7.2 |
+| <a name="provider_time"></a> [time](#provider\_time) | 0.13.1 |
 
 ## Modules
 
@@ -32,12 +35,14 @@ No modules.
 
 | Name | Type |
 |------|------|
+| [elasticstack_elasticsearch_security_api_key.enrich_access_key](https://registry.terraform.io/providers/elastic/elasticstack/latest/docs/resources/elasticsearch_security_api_key) | resource |
+| [elasticstack_elasticsearch_security_api_key.system_index_access_key](https://registry.terraform.io/providers/elastic/elasticstack/latest/docs/resources/elasticsearch_security_api_key) | resource |
 | [helm_release.charts](https://registry.terraform.io/providers/hashicorp/helm/latest/docs/resources/release) | resource |
 | [kubectl_manifest.beats](https://registry.terraform.io/providers/alekc/kubectl/latest/docs/resources/manifest) | resource |
 | [kubectl_manifest.certs](https://registry.terraform.io/providers/alekc/kubectl/latest/docs/resources/manifest) | resource |
 | [kubectl_manifest.eck](https://registry.terraform.io/providers/alekc/kubectl/latest/docs/resources/manifest) | resource |
 | [kubectl_manifest.namespace](https://registry.terraform.io/providers/alekc/kubectl/latest/docs/resources/manifest) | resource |
-| [minikube_cluster.cluster](https://registry.terraform.io/providers/scott-the-programmer/minikube/0.4.0/docs/resources/cluster) | resource |
+| [minikube_cluster.cluster](https://registry.terraform.io/providers/scott-the-programmer/minikube/0.4.4/docs/resources/cluster) | resource |
 | [random_password.password](https://registry.terraform.io/providers/hashicorp/random/latest/docs/resources/password) | resource |
 | [time_sleep.wait](https://registry.terraform.io/providers/hashicorp/time/latest/docs/resources/sleep) | resource |
 | [external_external.getip](https://registry.terraform.io/providers/hashicorp/external/2.3.3/docs/data-sources/external) | data source |
@@ -62,6 +67,8 @@ No modules.
 
 | Name | Description |
 |------|-------------|
+| <a name="output_enrich_api_key"></a> [enrich\_api\_key](#output\_enrich\_api\_key) | n/a |
 | <a name="output_es_credentials"></a> [es\_credentials](#output\_es\_credentials) | Elastic Admin credentials |
 | <a name="output_ingress"></a> [ingress](#output\_ingress) | Kubernetes Ingress Endpoints |
+| <a name="output_system_index_api_key"></a> [system\_index\_api\_key](#output\_system\_index\_api\_key) | n/a |
 <!-- END_TF_DOCS -->

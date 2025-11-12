@@ -1,0 +1,17 @@
+{
+    "persistent": {
+        "cluster": {
+            "remote": {
+                "main-cluster": {
+                    "skip_unavailable": true,
+                    "mode": "proxy",
+                    "proxy_address": "{{ proxy_address }}",
+                    "proxy_socket_connections": 18,
+                    "server_name": "{{ server_name }}",
+                    "seeds": null,
+                    "node_connections": null
+                }
+            }
+        }
+    }
+}

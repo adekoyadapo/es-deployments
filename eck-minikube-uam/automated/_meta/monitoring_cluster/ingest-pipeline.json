@@ -1,0 +1,38 @@
+{
+  "processors": [
+    {
+      "enrich": {
+        "field": "kibana.saved_object.id",
+        "policy_name": "objectid-policy",
+        "target_field": "meta",
+        "override": false,
+        "ignore_missing": true,
+        "ignore_failure": true,
+        "description": "Add enrichment"
+      }
+    },
+    {
+      "script": {
+        "source": "\nif (ctx.event.action == 'saved_object_delete') {\n  ctx['Active'] = false;\n} else {\n  ctx['Active'] = true;\n}\n        "
+      }
+    },
+    {
+      "geoip": {
+        "field": "http.request.headers.x-forwarded-for",
+        "target_field": "geoip",
+        "ignore_missing": true,
+        "ignore_failure": true
+      }
+    },
+    {
+      "script": {
+        "source": "\nZonedDateTime date = ZonedDateTime.parse(ctx['@timestamp']);\nctx.hour_of_day = date.getHour();\nctx.day_of_week_num = date.getDayOfWeek().getValue();\nctx.day_of_week = date.getDayOfWeek().toString();\nctx.day_of_month = date.getDayOfMonth();\nctx.month_num = date.getMonthValue();\nctx.month = date.getMonth().toString();\nctx.year = date.getYear().toString();\n"
+      }
+    },
+    {
+      "script": {
+        "source": "// Check if 'meta.dashboard.controlGroupInput' exists and remove it\nif (ctx.meta != null && ctx.meta.dashboard != null && ctx.meta.dashboard.controlGroupInput != null) {\n  ctx.meta.dashboard.remove('controlGroupInput');\n}\n\n// Check if 'meta.references' exists and remove it\nif (ctx.meta != null && ctx.meta.references != null) {\n  ctx.meta.remove('references');\n}\n\n// Check if 'lens.state' exists and remove it\nif (ctx.lens != null && ctx.lens.state != null) {\n  ctx.lens.remove('state');\n}"
+      }
+    }
+  ]
+}

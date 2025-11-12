@@ -1,0 +1,97 @@
+{
+  "source": {
+    "index": [
+      "elastic-logs-*"
+    ],
+    "query": {
+      "bool": {
+        "must": [],
+        "filter": [
+          {
+            "bool": {
+              "should": [
+                {
+                  "exists": {
+                    "field": "kibana.saved_object.id"
+                  }
+                }
+              ],
+              "minimum_should_match": 1
+            }
+          }
+        ],
+        "should": [],
+        "must_not": [
+          {
+            "match_phrase": {
+              "kibana.saved_object.type": "ingest-outputs"
+            }
+          },
+          {
+            "match_phrase": {
+              "kibana.saved_object.type": "config-global"
+            }
+          },
+          {
+            "match_phrase": {
+              "kibana.saved_object.type": "alert"
+            }
+          },
+          {
+            "match_phrase": {
+              "kibana.saved_object.type": "epm-packages"
+            }
+          },
+          {
+            "match_phrase": {
+              "kibana.saved_object.type.keyword": "ingest-agent-policies"
+            }
+          },
+          {
+            "match_phrase": {
+              "kibana.saved_object.type.keyword": "ingest_manager_settings"
+            }
+          },
+          {
+            "match_phrase": {
+              "kibana.saved_object.type.keyword": "security-rule"
+            }
+          },
+          {
+            "match_phrase": {
+              "kibana.saved_object.type.keyword": "infrastructure-ui-source"
+            }
+          },
+
+          {
+            "match_phrase": {
+              "kibana.saved_object.type.keyword": "infrastructure-monitoring-log-view"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "latest": {
+    "unique_key": [
+      "@timestamp"
+    ],
+    "sort": "@timestamp"
+  },
+  "dest": {
+    "index": "kibana-transform-02",
+    "pipeline": "enrich-ids"
+  },
+  "sync": {
+    "time": {
+      "delay": "300s",
+      "field": "@timestamp"
+    }
+  },
+  "retention_policy": {
+    "time": {
+      "field": "event.created",
+      "max_age": "180d"
+    }
+  }
+}

@@ -12,6 +12,7 @@ locals {
     "production"    = "es-ingress-prod"
     "observability" = "es-ingress-mon"
   }
+  ingress_hosts = { for i, j in data.kubernetes_ingress_v1.ingress : i => { "hosts" = [for k in j.spec.0.rule : k.host] } }
 }
 
 
@@ -36,7 +37,9 @@ resource "minikube_cluster" "cluster" {
     "ingress",
     "storage-provisioner",
     "default-storageclass",
-    "metrics-server"
+    "metrics-server",
+    "registry",
+    "registry-aliases"
   ]
 }
 

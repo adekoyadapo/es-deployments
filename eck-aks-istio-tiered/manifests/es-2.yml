@@ -1,0 +1,51 @@
+---
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: es-2
+  namespace: cluster-2
+spec:
+  version: ${ecs_version}
+  secureSettings:
+  - secretName: azure-snapshot-secrets
+  nodeSets:
+  - name: master
+    count: 1
+    config:
+      node.roles: ["master"]
+      node.store.allow_mmap: false
+      azure.client.default.endpoint_suffix: "ignored;BlobEndpoint=https://${sc_name}.blob.core.windows.net"
+    podTemplate:
+      metadata:
+        annotations:
+          traffic.sidecar.istio.io/includeInboundPorts: "*"
+          traffic.sidecar.istio.io/excludeOutboundPorts: "9300"
+          traffic.sidecar.istio.io/excludeInboundPorts: "9300"
+  - name: data
+    count: 2
+    config:
+      node.roles: ["data", "data_hot", "ingest"]
+      node.store.allow_mmap: false
+      azure.client.default.endpoint_suffix: "ignored;BlobEndpoint=https://${sc_name}.blob.core.windows.net"
+    podTemplate:
+      metadata:
+        annotations:
+          traffic.sidecar.istio.io/includeInboundPorts: "*"
+          traffic.sidecar.istio.io/excludeOutboundPorts: "9300"
+          traffic.sidecar.istio.io/excludeInboundPorts: "9300"
+  - name: frozen
+    count: 2
+    config:
+      node.roles: ["data_frozen"]
+      node.store.allow_mmap: false
+      azure.client.default.endpoint_suffix: "ignored;BlobEndpoint=https://${sc_name}.blob.core.windows.net"
+    podTemplate:
+      metadata:
+        annotations:
+          traffic.sidecar.istio.io/includeInboundPorts: "*"
+          traffic.sidecar.istio.io/excludeOutboundPorts: "9300"
+          traffic.sidecar.istio.io/excludeInboundPorts: "9300"
+  http:
+    tls:
+      selfSignedCertificate:
+        disabled: true

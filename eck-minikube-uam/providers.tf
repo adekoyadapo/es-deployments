@@ -24,6 +24,10 @@ terraform {
       source  = "hashicorp/http"
       version = "3.4.4"
     }
+    elasticstack = {
+      source  = "elastic/elasticstack"
+      version = "~> 0.11.16"
+    }
   }
 }
 

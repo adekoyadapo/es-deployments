@@ -60,13 +60,13 @@ terraform apply
 
 | Name | Version |
 |------|---------|
-| <a name="provider_azapi"></a> [azapi](#provider\_azapi) | 1.15.0 |
+| <a name="provider_azapi"></a> [azapi](#provider\_azapi) | ~>1.5 |
 | <a name="provider_azurerm"></a> [azurerm](#provider\_azurerm) | 3.111.0 |
-| <a name="provider_helm"></a> [helm](#provider\_helm) | 2.10.1 |
+| <a name="provider_helm"></a> [helm](#provider\_helm) | ~> 2.10.1 |
 | <a name="provider_http"></a> [http](#provider\_http) | 3.4.5 |
-| <a name="provider_kubectl"></a> [kubectl](#provider\_kubectl) | 1.16.0 |
-| <a name="provider_kubernetes"></a> [kubernetes](#provider\_kubernetes) | 2.22.0 |
-| <a name="provider_random"></a> [random](#provider\_random) | 3.6.3 |
+| <a name="provider_kubectl"></a> [kubectl](#provider\_kubectl) | ~> 1.14 |
+| <a name="provider_kubernetes"></a> [kubernetes](#provider\_kubernetes) | ~> 2.22.0 |
+| <a name="provider_random"></a> [random](#provider\_random) | ~>3.0 |
 | <a name="provider_time"></a> [time](#provider\_time) | 0.9.1 |
 
 ## Modules

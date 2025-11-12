@@ -1,0 +1,50 @@
+{
+  "trigger": {
+    "schedule": {
+      "interval": "5m"
+    }
+  },
+  "input": {
+    "search": {
+      "request": {
+        "search_type": "query_then_fetch",
+        "indices": [
+          "kibana_objects-01"
+        ],
+        "rest_total_hits_as_int": true,
+        "body": {
+          "query": {
+            "range": {
+              "@updated_at": {
+                "gte": "now-5m"
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "condition": {
+    "always": {}
+  },
+  "actions": {
+    "reindex": {
+      "webhook": {
+        "scheme": "https",
+        "host": "{{ host }}",
+        "port": 9200,
+        "method": "PUT",
+        "path": "_enrich/policy/objectid-policy/_execute",
+        "params": {},
+        "headers": {
+          "Authorization": "ApiKey {{ api_key }}"
+        }
+      }
+    }
+  },
+  "metadata": {
+    "xpack": {
+      "type": "json"
+    }
+  }
+}

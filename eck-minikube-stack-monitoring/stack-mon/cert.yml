@@ -1,0 +1,42 @@
+apiVersion: cert-manager.io/v1
+kind: Issuer
+metadata:
+  name: selfsigned-issuer
+spec:
+  selfSigned: {}
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: wildcard-cert
+  namespace: observability
+spec:
+  secretName: wildcard-tls-secret
+  issuerRef:
+    name: selfsigned-issuer
+  commonName: "*.sslip.io"
+  dnsNames:
+  - "*.sslip.io"
+---
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: wildcard-cert
+  namespace: production
+spec:
+  secretName: wildcard-tls-secret
+  issuerRef:
+    name: selfsigned-issuer
+  commonName: "*.sslip.io"
+  dnsNames:
+  - "*.sslip.io"
+---
+apiVersion: v1
+kind: Secret
+metadata:
+  name: eck-trial-license
+  namespace: elastic-system
+  labels:
+    license.k8s.elastic.co/type: enterprise_trial
+  annotations:
+    elastic.co/eula: accepted

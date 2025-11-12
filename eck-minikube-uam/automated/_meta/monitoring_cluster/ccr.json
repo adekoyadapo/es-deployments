@@ -1,0 +1,14 @@
+{
+    "remote_cluster": "main-cluster",
+    "leader_index": "kibana_objects-01",
+    "max_read_request_operation_count": 5120,
+    "max_outstanding_read_requests": 12,
+    "max_read_request_size": "32mb",
+    "max_write_request_operation_count": 5120,
+    "max_write_request_size": "9223372036854775807b",
+    "max_outstanding_write_requests": 9,
+    "max_write_buffer_count": 2147483647,
+    "max_write_buffer_size": "512mb",
+    "max_retry_delay": "500ms",
+    "read_poll_timeout": "1m"
+  }

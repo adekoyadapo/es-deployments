@@ -1,5 +1,5 @@
 data "ec_stack" "latest" {
-  version_regex = "8.17"
+  version_regex = var.version_regex
   region        = var.region
 }
 
@@ -47,4 +47,34 @@ resource "ec_deployment" "source" {
   lifecycle {
     ignore_changes = [integrations_server]
   }
+}
+
+
+provider "elasticstack" {
+  elasticsearch {
+    username  = ec_deployment.source.elasticsearch_username
+    password  = ec_deployment.source.elasticsearch_password
+    endpoints = [ec_deployment.source.elasticsearch.https_endpoint]
+    insecure  = true
+  }
+}
+
+
+resource "elasticstack_elasticsearch_security_api_key" "api_key" {
+  provider = elasticstack
+  name     = "api_key"
+
+  role_descriptors = jsonencode({
+    system_index_access = {
+      cluster = ["all"],
+      indices = [
+        {
+          names                    = ["*"],
+          privileges               = ["all"],
+          allow_restricted_indices = true
+        }
+      ]
+    }
+  })
+  depends_on = [ec_deployment.source]
 }

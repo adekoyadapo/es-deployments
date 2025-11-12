@@ -1,0 +1,46 @@
+{
+    "trigger": {
+        "schedule": {
+            "interval": "5m"
+        }
+    },
+    "input": {
+        "search": {
+            "request": {
+                "search_type": "query_then_fetch",
+                "indices": [
+                    ".kibana_analytics"
+                ],
+                "rest_total_hits_as_int": true,
+                "body": {
+                    "query": {
+                        "range": {
+                            "@updated_at": {
+                                "gte": "now-5m"
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    },
+    "condition": {
+        "always": {}
+    },
+    "actions": {
+        "reindex": {
+            "webhook": {
+                "scheme": "https",
+                "host": "{{ host }}",
+                "port": 9200,
+                "method": "post",
+                "path": "/_reindex",
+                "params": {},
+                "headers": {
+                    "Authorization": "ApiKey {{ api_key }}"
+                },
+                "body": "{\"source\": {\"index\": \".kibana_analytics\"}, \"dest\": {\"index\": \"kibana_objects-01\"}, \"conflicts\": \"abort\"}"
+            }
+        }
+    }
+}

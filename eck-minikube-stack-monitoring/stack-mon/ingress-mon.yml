@@ -1,0 +1,35 @@
+---
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: es-ingress-mon
+  namespace: observability
+  annotations:
+    nginx.ingress.kubernetes.io/backend-protocol: "HTTPS"
+spec:
+  ingressClassName: nginx
+  rules:
+  - host: kb-mon.${domain}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: kb-mon-kb-http
+            port:
+              number: 5601
+  - host: es-mon.${domain}
+    http:
+      paths:
+      - path: /
+        pathType: Prefix
+        backend:
+          service:
+            name: es-mon-es-http
+            port:
+              number: 9200
+  tls:
+  - hosts:
+    - "*.sslip.io"
+    secretName: wildcard-tls-secret

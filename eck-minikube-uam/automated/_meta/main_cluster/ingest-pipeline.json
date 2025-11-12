@@ -1,0 +1,31 @@
+{
+  "description": "Extract ID and create new field",
+  "processors": [
+    {
+      "script": {
+        "lang": "painless",
+        "source": "// Find the last occurrence of ':'\ndef lastIndex = ctx['_id'].lastIndexOf(':');\n// Extract the ID portion after the last colon\ndef extractedId = lastIndex == -1 ? ctx['_id'] : ctx['_id'].substring(lastIndex + 1);\n// Create a new field with the extracted ID\nctx['kibana.saved_object.id'] = extractedId;",
+        "ignore_failure": true
+      }
+    },
+    {
+      "remove": {
+        "field": [
+          "canvas-workpad-template.template",
+          "canvas-workpad.pages",
+          "canvas-workpad.css",
+          "dashboard.optionsJSON",
+          "dashboard.panelsJSON"
+          ],
+          "ignore_missing": true
+      }
+    },
+    {
+      "set": {
+        "field": "ingest_timestamp",
+        "value": "{{_ingest.timestamp}}",
+        "ignore_empty_value": true
+      }
+    }
+  ]
+}

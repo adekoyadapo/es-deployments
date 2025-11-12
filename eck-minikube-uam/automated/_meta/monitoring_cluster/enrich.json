@@ -1,0 +1,11 @@
+{
+  "match": {
+    "indices": [
+      "kibana_objects*"
+    ],
+    "match_field": "kibana.saved_object.id",
+    "enrich_fields": [
+      "*"
+    ]
+  }
+}

@@ -35,6 +35,9 @@ Collection of Terraform configurations that prototype Elastic deployments across
 **Amazon EKS**
 - [eks-cluster](./eks-cluster) – Provisions the base EKS cluster and dependencies used by several Elastic-on-EKS experiments.
 
+**k3d Stack Monitoring standalone Example**
+- [es-k8s-mon](./es-k8s-mon) – Stack monitoring example on k3d for non-ECK deployments
+
 **Minikube core scenarios**
 - [eck-minikube-istio](./eck-minikube-istio) – Local Istio + ECK stack with MetalLB-backed ingress paths.
 - [eck-minikube-ccs](./eck-minikube-ccs) – Cross-cluster search topology spanning multiple Elasticsearch namespaces.

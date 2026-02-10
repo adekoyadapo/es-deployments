@@ -1,0 +1,118 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: mon-es-config
+  namespace: monitoring
+data:
+  elasticsearch.yml: |
+    cluster.name: monitoring
+    network.host: 0.0.0.0
+    discovery.type: single-node
+    xpack.license.self_generated.type: trial
+    xpack.security.enabled: true
+    xpack.security.http.ssl.enabled: false
+    xpack.security.transport.ssl.enabled: false
+    xpack.monitoring.collection.enabled: false
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mon-es-headless
+  namespace: monitoring
+spec:
+  clusterIP: None
+  selector:
+    app: mon-es
+  ports:
+    - name: http
+      port: 9200
+    - name: transport
+      port: 9300
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: mon-es-svc
+  namespace: monitoring
+spec:
+  selector:
+    app: mon-es
+  ports:
+    - name: http
+      port: 9200
+      targetPort: 9200
+    - name: transport
+      port: 9300
+      targetPort: 9300
+---
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: mon-es
+  namespace: monitoring
+spec:
+  serviceName: mon-es-headless
+  replicas: 1
+  selector:
+    matchLabels:
+      app: mon-es
+  template:
+    metadata:
+      labels:
+        app: mon-es
+    spec:
+      containers:
+        - name: elasticsearch
+          image: docker.elastic.co/elasticsearch/elasticsearch:8.19.11
+          ports:
+            - containerPort: 9200
+              name: http
+            - containerPort: 9300
+              name: transport
+          env:
+            - name: ES_JAVA_OPTS
+              value: "-Xms512m -Xmx512m"
+            - name: ELASTIC_PASSWORD
+              value: "changeme"
+          resources:
+            requests:
+              cpu: 500m
+              memory: 1Gi
+            limits:
+              cpu: "1"
+              memory: 1536Mi
+          volumeMounts:
+            - name: config
+              mountPath: /usr/share/elasticsearch/config/elasticsearch.yml
+              subPath: elasticsearch.yml
+            - name: data
+              mountPath: /usr/share/elasticsearch/data
+          readinessProbe:
+            exec:
+              command:
+                - sh
+                - -c
+                - |
+                  curl -sf -u elastic:changeme http://localhost:9200/_cluster/health?local=true
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+      initContainers:
+        - name: fix-permissions
+          image: busybox:1.36
+          command: ["sh", "-c", "chown -R 1000:1000 /usr/share/elasticsearch/data"]
+          volumeMounts:
+            - name: data
+              mountPath: /usr/share/elasticsearch/data
+      volumes:
+        - name: config
+          configMap:
+            name: mon-es-config
+  volumeClaimTemplates:
+    - metadata:
+        name: data
+      spec:
+        accessModes: ["ReadWriteOnce"]
+        resources:
+          requests:
+            storage: 5Gi

@@ -1,0 +1,85 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: dev-kb-config
+  namespace: dev
+data:
+  kibana.yml: |
+    server.host: "0.0.0.0"
+    server.name: "dev-kibana"
+    elasticsearch.hosts: ["http://dev-es-svc:9200"]
+    elasticsearch.username: "kibana_system"
+    elasticsearch.password: "changeme"
+    monitoring.ui.enabled: true
+    monitoring.kibana.collection.enabled: false
+    logging:
+      appenders:
+        json_console:
+          type: console
+          layout:
+            type: json
+      root:
+        appenders: [json_console]
+    xpack.encryptedSavedObjects.encryptionKey: "a7wk5GidF9xP2qR8mN4vB1cY6hT0eLpX"
+    xpack.security.encryptionKey: "b7yH2JkfM3nQ9pS5tW8xZ0uA4dG6iRqW"
+    xpack.reporting.encryptionKey: "c1eL8TnfR4qP7sW2xY5zA0bD3gI6jKmN"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: dev-kb-svc
+  namespace: dev
+spec:
+  selector:
+    app: dev-kb
+  ports:
+    - name: http
+      port: 5601
+      targetPort: 5601
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: dev-kb
+  namespace: dev
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: dev-kb
+  template:
+    metadata:
+      labels:
+        app: dev-kb
+    spec:
+      containers:
+        - name: kibana
+          image: docker.elastic.co/kibana/kibana:8.19.11
+          ports:
+            - containerPort: 5601
+              name: http
+          env:
+            - name: NODE_OPTIONS
+              value: "--max-old-space-size=512"
+          resources:
+            requests:
+              cpu: 250m
+              memory: 768Mi
+            limits:
+              cpu: "1"
+              memory: 1Gi
+          volumeMounts:
+            - name: config
+              mountPath: /usr/share/kibana/config/kibana.yml
+              subPath: kibana.yml
+          readinessProbe:
+            httpGet:
+              path: /api/status
+              port: 5601
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+      volumes:
+        - name: config
+          configMap:
+            name: dev-kb-config

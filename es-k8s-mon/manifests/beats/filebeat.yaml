@@ -1,0 +1,205 @@
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: filebeat
+  namespace: dev
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRole
+metadata:
+  name: filebeat
+rules:
+  - apiGroups: [""]
+    resources: ["namespaces", "pods", "nodes"]
+    verbs: ["get", "list", "watch"]
+  - apiGroups: ["apps"]
+    resources: ["replicasets"]
+    verbs: ["get", "list", "watch"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: ClusterRoleBinding
+metadata:
+  name: filebeat
+subjects:
+  - kind: ServiceAccount
+    name: filebeat
+    namespace: dev
+roleRef:
+  kind: ClusterRole
+  name: filebeat
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: filebeat-config
+  namespace: dev
+data:
+  filebeat.yml: |
+    filebeat.inputs:
+      - type: filestream
+        id: dev-containers
+        paths:
+          - /var/log/containers/*dev*.log
+        prospector.scanner.symlinks: true
+        parsers:
+          - container:
+              stream: all
+              format: auto
+        processors:
+          - add_kubernetes_metadata:
+              host: ${NODE_NAME}
+              matchers:
+                - logs_path:
+                    logs_path: "/var/log/containers/"
+          - drop_event:
+              when:
+                or:
+                  - not:
+                      equals:
+                        kubernetes.namespace: dev
+                  - equals:
+                      kubernetes.container.name: elasticsearch
+                  - equals:
+                      kubernetes.container.name: kibana
+
+    filebeat.modules:
+      - module: elasticsearch
+        server:
+          enabled: true
+          var.paths:
+            - /var/log/containers/*dev*elasticsearch*.log
+          input:
+            type: filestream
+            id: dev-elasticsearch
+            paths:
+              - /var/log/containers/*dev*elasticsearch*.log
+            prospector.scanner.symlinks: true
+            parsers:
+              - container:
+                  stream: all
+                  format: auto
+            processors:
+              - add_kubernetes_metadata:
+                  host: ${NODE_NAME}
+                  matchers:
+                    - logs_path:
+                        logs_path: "/var/log/containers/"
+        gc:
+          enabled: false
+        slowlog:
+          enabled: false
+        deprecation:
+          enabled: false
+        audit:
+          enabled: false
+
+      - module: kibana
+        log:
+          enabled: true
+          var.paths:
+            - /var/log/containers/*dev*kibana*.log
+          input:
+            type: filestream
+            id: dev-kibana
+            paths:
+              - /var/log/containers/*dev*kibana*.log
+            prospector.scanner.symlinks: true
+            parsers:
+              - container:
+                  stream: all
+                  format: auto
+            processors:
+              - add_kubernetes_metadata:
+                  host: ${NODE_NAME}
+                  matchers:
+                    - logs_path:
+                        logs_path: "/var/log/containers/"
+              - drop_event:
+                  when:
+                    or:
+                      - contains:
+                          message: "Kibana is currently running with legacy OpenSSL providers enabled"
+                      - contains:
+                          message: "Native global console methods have been overridden"
+        audit:
+          enabled: false
+
+    output.elasticsearch:
+      hosts: ["http://mon-es-svc.monitoring:9200"]
+      username: "elastic"
+      password: "changeme"
+
+    setup.template.settings:
+      index.number_of_replicas: 0
+    setup.template.overwrite: true
+
+    monitoring.enabled: true
+    monitoring.elasticsearch:
+      hosts: ["http://mon-es-svc.monitoring:9200"]
+      username: "elastic"
+      password: "changeme"
+
+    logging.level: info
+---
+apiVersion: apps/v1
+kind: DaemonSet
+metadata:
+  name: filebeat
+  namespace: dev
+spec:
+  selector:
+    matchLabels:
+      app: filebeat
+  template:
+    metadata:
+      labels:
+        app: filebeat
+    spec:
+      serviceAccountName: filebeat
+      terminationGracePeriodSeconds: 30
+      containers:
+        - name: filebeat
+          image: docker.elastic.co/beats/filebeat:8.19.11
+          args: ["-c", "/etc/filebeat/filebeat.yml", "-e"]
+          env:
+            - name: NODE_NAME
+              valueFrom:
+                fieldRef:
+                  fieldPath: spec.nodeName
+          resources:
+            requests:
+              cpu: 100m
+              memory: 128Mi
+            limits:
+              cpu: 250m
+              memory: 256Mi
+          volumeMounts:
+            - name: config
+              mountPath: /etc/filebeat/filebeat.yml
+              subPath: filebeat.yml
+              readOnly: true
+            - name: varlogcontainers
+              mountPath: /var/log/containers
+              readOnly: true
+            - name: varlogpods
+              mountPath: /var/log/pods
+              readOnly: true
+            - name: varlibdockercontainers
+              mountPath: /var/lib/docker/containers
+              readOnly: true
+          securityContext:
+            runAsUser: 0
+      volumes:
+        - name: config
+          configMap:
+            name: filebeat-config
+        - name: varlogcontainers
+          hostPath:
+            path: /var/log/containers
+        - name: varlogpods
+          hostPath:
+            path: /var/log/pods
+        - name: varlibdockercontainers
+          hostPath:
+            path: /var/lib/docker/containers

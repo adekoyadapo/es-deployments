@@ -1,0 +1,27 @@
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: dev-ingress
+  namespace: dev
+spec:
+  rules:
+    - host: dev-es.IP_PLACEHOLDER.sslip.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: dev-es-svc
+                port:
+                  number: 9200
+    - host: dev-kb.IP_PLACEHOLDER.sslip.io
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: dev-kb-svc
+                port:
+                  number: 5601

@@ -1,0 +1,27 @@
+apiVersion: kibana.k8s.elastic.co/v1
+kind: Kibana
+metadata:
+  name: kibana
+  namespace: __NAMESPACE__
+spec:
+  version: __ES_VERSION__
+  count: 1
+  elasticsearchRef:
+    name: elasticsearch
+  podTemplate:
+    spec:
+      containers:
+        - name: kibana
+          env:
+            - name: HTTP_PROXY
+              value: http://proxy.__NAMESPACE__.svc.cluster.local:3128
+            - name: HTTPS_PROXY
+              value: http://proxy.__NAMESPACE__.svc.cluster.local:3128
+            - name: http_proxy
+              value: http://proxy.__NAMESPACE__.svc.cluster.local:3128
+            - name: https_proxy
+              value: http://proxy.__NAMESPACE__.svc.cluster.local:3128
+            - name: NO_PROXY
+              value: localhost,127.0.0.1,.svc,.svc.cluster.local,.cluster.local,proxy,proxy.__NAMESPACE__.svc.cluster.local,elasticsearch-es-http,elasticsearch-es-http.__NAMESPACE__.svc.cluster.local
+            - name: no_proxy
+              value: localhost,127.0.0.1,.svc,.svc.cluster.local,.cluster.local,proxy,proxy.__NAMESPACE__.svc.cluster.local,elasticsearch-es-http,elasticsearch-es-http.__NAMESPACE__.svc.cluster.local

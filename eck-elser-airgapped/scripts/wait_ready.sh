@@ -22,4 +22,8 @@ if [[ "${MODE}" == "jina" ]]; then
   ./scripts/start_jina_docker.sh
 fi
 
+if [[ "${MODE}" == "proxy" ]]; then
+  kubectl -n "${NAMESPACE}" rollout status deploy/proxy --timeout=180s
+fi
+
 echo "ECK ${MODE} environment is ready"

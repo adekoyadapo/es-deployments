@@ -1,14 +1,16 @@
 # ECK ELSER Air-Gapped Lab
 
-This repo is a focused Elasticsearch/Kibana lab for three air-gapped inference setups on ECK:
+This repo is a focused Elasticsearch/Kibana lab for four inference setups on ECK:
 
 | Mode | What it deploys | Primary use case |
 | --- | --- | --- |
 | `file` | Elasticsearch ML reads ELSER from local files mounted into the pod | Elastic ELSER with file-based model access |
 | `http` | Elasticsearch ML reads ELSER from a passwordless in-cluster HTTP server | Elastic ELSER with HTTP model access |
 | `jina` | Elasticsearch points to an external amd64 Jina Docker service through `sslip.io` | External embedding service for the same validation flow |
+| `proxy` | Elasticsearch downloads ELSER through an in-cluster forward proxy | Simulate controlled egress to Elastic's model repository |
 
 The Elastic modes use the cross-platform ELSER v2 artifacts. The Jina mode is a separate dense embedding path based on the `jina-ai/jina-airgap` example.
+The proxy mode keeps the default Elastic model repository and routes the download through an in-cluster forward proxy.
 
 ## Key Documentation
 
@@ -248,6 +250,61 @@ What matters:
 - The host IP must resolve through `sslip.io`
 - Elasticsearch must be able to reach the Jina service URL
 
+### `proxy`
+
+This mode keeps the default Elastic model repository and routes the ELSER download through an in-cluster forward proxy.
+
+Important YAML settings:
+
+```yaml
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: proxy
+spec:
+  template:
+    spec:
+      containers:
+        - name: proxy
+          image: eck-elser-proxy:latest
+---
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: elasticsearch
+spec:
+  version: 9.4.2
+  nodeSets:
+    - name: default
+      config:
+        node.roles: ["master", "data_hot", "data_content", "ingest", "ml", "remote_cluster_client"]
+        xpack.ml.use_auto_machine_memory_percent: true
+      podTemplate:
+        spec:
+          containers:
+            - name: elasticsearch
+              env:
+                - name: ES_JAVA_OPTS
+                  value: >-
+                    -Dhttps.proxyHost=proxy.elser-lab.svc.cluster.local
+                    -Dhttps.proxyPort=3128
+                    -Dhttp.proxyHost=proxy.elser-lab.svc.cluster.local
+                    -Dhttp.proxyPort=3128
+```
+
+Kibana also gets proxy environment variables so any outbound traffic follows the same proxy path.
+
+What matters:
+
+- The proxy service must be reachable from Elasticsearch and Kibana
+- `ES_JAVA_OPTS` must include the JVM proxy flags
+- `NO_PROXY` must exclude internal Kubernetes service DNS names
+
+Relevant docs:
+
+- [Download and deploy ELSER](https://www.elastic.co/docs/explore-analyze/machine-learning/nlp/ml-nlp-elser#download-and-deploy-elser)
+- [Manage your license in ECK](https://www.elastic.co/docs/deploy-manage/license/manage-your-license-in-eck)
+
 ## License
 
 ELSER requires a subscription level that permits semantic search, or an active trial.
@@ -296,6 +353,13 @@ make up MODE=jina
 make test MODE=jina
 ```
 
+Proxy-driven ELSER download:
+
+```sh
+make up MODE=proxy
+make test MODE=proxy
+```
+
 ## Validation
 
 `make test` validates both model inference and document retrieval.
@@ -315,6 +379,15 @@ For `jina`:
 3. Call the Elasticsearch inference endpoint that targets the external Jina service.
 4. Index sample documents with embeddings produced through Elasticsearch inference.
 5. Run dense-vector search and assert the expected document ranks first.
+
+For `proxy`:
+
+1. Start the in-cluster forward proxy.
+2. Trigger the ELSER inference endpoint so Elasticsearch downloads the model through the proxy.
+3. Verify the proxy logs contain a `CONNECT` to `ml-models.elastic.co:443`.
+4. Create a small index with a `sparse_vector` field.
+5. Ingest one relevant document and one unrelated document.
+6. Search with sparse vectors and assert the relevant document ranks first.
 
 ## Access
 
@@ -344,8 +417,8 @@ kubectl -n elser-lab get secret elasticsearch-es-elastic-user -o jsonpath='{.dat
 
 ## Make Targets
 
-- `make up MODE=file|http|jina`: create the k3d cluster, install ECK, deploy the selected mode, apply license, and configure inference
-- `make test MODE=file|http|jina`: run inference and document retrieval validation for the selected mode
+- `make up MODE=file|http|jina|proxy`: create the k3d cluster, install ECK, deploy the selected mode, apply license, and configure inference
+- `make test MODE=file|http|jina|proxy`: run inference and document retrieval validation for the selected mode
 - `make artifacts-check`: verify the three ELSER cross-platform files exist
 - `make license LICENSE_FILE=...`: apply a license JSON or start a trial if `LICENSE_FILE` is unset
 - `make status`: show Kubernetes and ECK status
@@ -372,3 +445,9 @@ kubectl -n elser-lab run repo-check --restart=Never --rm --attach --image=curlim
 ```
 
 If Jina mode fails, check that Docker can run the amd64 image and that the `sslip.io` URL resolves to the host IP.
+
+If proxy mode fails, check the proxy pod logs for `CONNECT ml-models.elastic.co:443` and confirm `NO_PROXY` still excludes in-cluster DNS names:
+
+```sh
+kubectl -n elser-lab logs deploy/proxy --tail=200
+```

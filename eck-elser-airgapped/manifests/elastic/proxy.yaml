@@ -1,0 +1,59 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: proxy
+  namespace: __NAMESPACE__
+  labels:
+    app: proxy
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: proxy
+  template:
+    metadata:
+      labels:
+        app: proxy
+    spec:
+      containers:
+        - name: proxy
+          image: __PROXY_IMAGE__
+          imagePullPolicy: IfNotPresent
+          env:
+            - name: PROXY_PORT
+              value: "3128"
+          ports:
+            - containerPort: 3128
+              name: http
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 5
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http
+            initialDelaySeconds: 5
+            periodSeconds: 10
+          resources:
+            requests:
+              cpu: 50m
+              memory: 64Mi
+            limits:
+              memory: 128Mi
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: proxy
+  namespace: __NAMESPACE__
+spec:
+  type: ClusterIP
+  selector:
+    app: proxy
+  ports:
+    - name: http
+      port: 3128
+      targetPort: http

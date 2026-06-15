@@ -24,7 +24,7 @@ wait_for_elastic_endpoint() {
 }
 
 case "${MODE}" in
-  file|http)
+  file|http|proxy)
     body="$(cat <<JSON
 {
   "service": "elasticsearch",

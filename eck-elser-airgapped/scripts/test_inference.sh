@@ -10,7 +10,7 @@ ELASTIC_PASSWORD="$(elastic_password)"
 export ELASTIC_PASSWORD
 
 case "${MODE}" in
-  file|http)
+  file|http|proxy)
     response="$(es_api POST "/_inference/sparse_embedding/${ELSER_ENDPOINT_ID}" '{"input":["How do I deploy ELSER in an air gapped Kubernetes environment?"]}')"
     echo "${response}" | grep -q '"is_truncated"'
 
@@ -60,6 +60,9 @@ case "${MODE}" in
       \"size\": 1
     }")"
     echo "${search_response}" | grep -q '"_id":"1"'
+    if [[ "${MODE}" == "proxy" ]]; then
+      kubectl -n "${NAMESPACE}" logs deploy/proxy --since=30m | grep -q 'CONNECT ml-models\.elastic\.co:443'
+    fi
     echo "ELSER sparse embedding validation passed"
     ;;
   jina)

@@ -1,0 +1,39 @@
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: elasticsearch
+  namespace: __NAMESPACE__
+spec:
+  version: __ES_VERSION__
+  nodeSets:
+    - name: default
+      count: 1
+      config:
+        node.roles: ["master", "data_hot", "data_content", "ingest", "ml", "remote_cluster_client"]
+        xpack.ml.use_auto_machine_memory_percent: true
+      volumeClaimTemplates:
+        - metadata:
+            name: elasticsearch-data
+          spec:
+            accessModes: ["ReadWriteOnce"]
+            resources:
+              requests:
+                storage: 20Gi
+      podTemplate:
+        spec:
+          containers:
+            - name: elasticsearch
+              env:
+                - name: ES_JAVA_OPTS
+                  value: >-
+                    -Dhttp.proxyHost=proxy.__NAMESPACE__.svc.cluster.local
+                    -Dhttp.proxyPort=3128
+                    -Dhttps.proxyHost=proxy.__NAMESPACE__.svc.cluster.local
+                    -Dhttps.proxyPort=3128
+                    -Dhttp.nonProxyHosts=localhost|127.0.0.1|*.svc|*.svc.cluster.local|*.cluster.local|proxy|proxy.__NAMESPACE__.svc.cluster.local|elasticsearch-es-http|kibana-kb-http|kubernetes.default.svc
+              resources:
+                requests:
+                  cpu: "2"
+                  memory: 6Gi
+                limits:
+                  memory: 6Gi

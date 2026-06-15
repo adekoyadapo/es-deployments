@@ -17,13 +17,15 @@ JINA_IMAGE="${JINA_IMAGE:-ghcr.io/jina-ai/jina-airgap/jina-embeddings-v5-text-sm
 JINA_ENDPOINT_ID="${JINA_ENDPOINT_ID:-jina-airgap}"
 JINA_PORT="${JINA_PORT:-18080}"
 JINA_CONTAINER_NAME="${JINA_CONTAINER_NAME:-eck-elser-jina}"
+PROXY_IMAGE="${PROXY_IMAGE:-eck-elser-proxy:latest}"
+PROXY_PORT="${PROXY_PORT:-3128}"
 LOCAL_ES_PORT="${LOCAL_ES_PORT:-19200}"
 
 validate_mode_value() {
   case "${MODE}" in
-    file|http|jina) ;;
+    file|http|jina|proxy) ;;
     *)
-      echo "Unsupported MODE=${MODE}. Use MODE=file, MODE=http, or MODE=jina." >&2
+      echo "Unsupported MODE=${MODE}. Use MODE=file, MODE=http, MODE=jina, or MODE=proxy." >&2
       exit 1
       ;;
   esac
@@ -36,6 +38,7 @@ render_manifest() {
     -e "s|__ES_VERSION__|${ES_VERSION}|g" \
     -e "s|__MODEL_ARTIFACTS_NODE_PATH__|${MODEL_ARTIFACTS_NODE_PATH}|g" \
     -e "s|__JINA_IMAGE__|${JINA_IMAGE}|g" \
+    -e "s|__PROXY_IMAGE__|${PROXY_IMAGE}|g" \
     "${file}"
 }
 
@@ -87,6 +90,14 @@ sslip_host() {
 jina_base_url() {
   local host="${JINA_HOST:-$(sslip_host)}"
   printf 'http://%s:%s\n' "${host}" "${JINA_PORT}"
+}
+
+proxy_host() {
+  printf 'proxy.%s.svc.cluster.local\n' "${NAMESPACE}"
+}
+
+proxy_base_url() {
+  printf 'http://%s:%s\n' "$(proxy_host)" "${PROXY_PORT}"
 }
 
 elastic_password() {

@@ -1,0 +1,49 @@
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: elasticsearch
+  namespace: __NAMESPACE__
+spec:
+  version: __ES_VERSION__
+  nodeSets:
+    - name: default
+      count: 1
+      config:
+        node.roles: ["master", "data_hot", "data_content", "ingest", "ml", "remote_cluster_client"]
+        xpack.ml.model_repository: "file://${path.home}/config/models/"
+        xpack.ml.use_auto_machine_memory_percent: true
+      volumeClaimTemplates:
+        - metadata:
+            name: elasticsearch-data
+          spec:
+            accessModes: ["ReadWriteOnce"]
+            resources:
+              requests:
+                storage: 20Gi
+      podTemplate:
+        spec:
+          initContainers:
+            - name: elastic-internal-init-filesystem
+              resources:
+                requests:
+                  cpu: "100m"
+                  memory: 1Gi
+                limits:
+                  memory: 1Gi
+          containers:
+            - name: elasticsearch
+              resources:
+                requests:
+                  cpu: "2"
+                  memory: 6Gi
+                limits:
+                  memory: 6Gi
+              volumeMounts:
+                - name: elser-models
+                  mountPath: /usr/share/elasticsearch/config/models
+                  readOnly: true
+          volumes:
+            - name: elser-models
+              hostPath:
+                path: __MODEL_ARTIFACTS_NODE_PATH__
+                type: Directory

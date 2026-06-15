@@ -1,0 +1,6 @@
+artifacts/
+*.log
+.DS_Store
+manifests/elastic/eck-crds.yaml
+manifests/elastic/eck-operator.yaml
+manifests/elastic/.eck-version

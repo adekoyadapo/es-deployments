@@ -1,0 +1,30 @@
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: elasticsearch
+  namespace: __NAMESPACE__
+spec:
+  version: __ES_VERSION__
+  nodeSets:
+    - name: default
+      count: 1
+      config:
+        node.roles: ["master", "data_hot", "data_content", "ingest", "remote_cluster_client"]
+      volumeClaimTemplates:
+        - metadata:
+            name: elasticsearch-data
+          spec:
+            accessModes: ["ReadWriteOnce"]
+            resources:
+              requests:
+                storage: 20Gi
+      podTemplate:
+        spec:
+          containers:
+            - name: elasticsearch
+              resources:
+                requests:
+                  cpu: "1"
+                  memory: 3Gi
+                limits:
+                  memory: 3Gi

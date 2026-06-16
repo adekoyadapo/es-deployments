@@ -1,0 +1,60 @@
+apiVersion: elasticsearch.k8s.elastic.co/v1
+kind: Elasticsearch
+metadata:
+  name: __ECK_CLUSTER__
+  namespace: __NAMESPACE__
+spec:
+  version: __ES_VERSION__
+  secureSettings:
+    - secretName: remote-api-keys
+  transport:
+    tls:
+      certificateAuthorities:
+        configMapName: remote-transport-ca
+  nodeSets:
+    - name: default
+      count: 1
+      config:
+        node.roles: ["master", "data_hot", "data_content", "ingest", "remote_cluster_client"]
+        node.store.allow_mmap: false
+        xpack.security.remote_cluster_client.ssl.enabled: true
+        xpack.security.remote_cluster_client.ssl.certificate_authorities: ["/usr/share/elasticsearch/config/remote-certs/remote-rcs-ca.crt"]
+      podTemplate:
+        spec:
+          containers:
+            - name: elasticsearch
+              resources:
+                requests:
+                  cpu: "1"
+                  memory: 2Gi
+                limits:
+                  memory: 2Gi
+              volumeMounts:
+                - name: remote-rcs-ca
+                  mountPath: /usr/share/elasticsearch/config/remote-certs
+                  readOnly: true
+          volumes:
+            - name: remote-rcs-ca
+              configMap:
+                name: remote-rcs-ca
+      volumeClaimTemplates:
+        - metadata:
+            name: elasticsearch-data
+          spec:
+            accessModes: ["ReadWriteOnce"]
+            resources:
+              requests:
+                storage: 10Gi
+---
+apiVersion: kibana.k8s.elastic.co/v1
+kind: Kibana
+metadata:
+  name: kibana
+  namespace: __NAMESPACE__
+spec:
+  version: __ES_VERSION__
+  count: 1
+  config:
+    server.publicBaseUrl: "https://__KB_INGRESS_HOST__"
+  elasticsearchRef:
+    name: __ECK_CLUSTER__

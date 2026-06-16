@@ -1,0 +1,18 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+source "$(dirname "$0")/common.sh"
+ensure_env_file
+write_runtime_env
+load_runtime_env
+
+cat <<EOF
+HOST_IP=${HOST_IP}
+INGRESS_BASE_HOST=${INGRESS_BASE_HOST}
+ES_INGRESS_HOST=${ES_INGRESS_HOST}
+KB_INGRESS_HOST=${KB_INGRESS_HOST}
+DOCKER_ES_HOST=${DOCKER_ES_HOST}
+DOCKER_KB_HOST=${DOCKER_KB_HOST}
+REMOTE_RCS_HOST=${REMOTE_RCS_HOST}
+REMOTE_TRANSPORT_HOST=${REMOTE_TRANSPORT_HOST}
+EOF
